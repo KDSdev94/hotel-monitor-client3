@@ -50,11 +50,11 @@ const StaffCard = ({ staff, onEdit }) => {
                         <div
                             className={`w-16 h-16 rounded-full overflow-hidden border-2 p-0.5 shadow-sm transition-all duration-500 group-hover:scale-105 flex items-center justify-center ${statusConfig[status] || 'border-gray-600'}`}
                         >
-                            {avatar && avatar !== '' && !avatar.includes('pravatar.cc') ? (
+                            {avatar && !avatar.includes('pravatar.cc') ? (
                                 <img src={avatar} alt={name} className="w-full h-full rounded-full object-cover" />
                             ) : (
                                 <div className="w-full h-full rounded-full bg-[#242424] dark:bg-[#1a1a1a] flex items-center justify-center">
-                                    <span className="text-primary font-display font-black text-xl drop-shadow-[0_0_8px_rgba(244,192,37,0.3)]">{name?.charAt(0) || 'S'}</span>
+                                    <span className="text-primary font-display font-black text-xl drop-shadow-[0_0_8px_rgba(244,192,37,0.3)]">{name?.charAt(0)}</span>
                                 </div>
                             )}
                         </div>
@@ -78,15 +78,15 @@ const StaffCard = ({ staff, onEdit }) => {
                 <div className="mt-6 space-y-3">
                     <div className="flex justify-between text-xs border-b border-gray-50 dark:border-gray-700 pb-2">
                         <span className="text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider">{t('staff.current_task', { defaultValue: 'Current Task' })}</span>
-                        <span className="text-gray-900 dark:text-white font-bold">{currentTask}</span>
+                        <span className={`font-bold ${currentTask ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-600 italic'}`}>{currentTask || 'Tidak ada tugas'}</span>
                     </div>
                     <div className="flex justify-between text-xs border-b border-gray-50 dark:border-gray-700 pb-2">
                         <span className="text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider">{isOffline ? t('staff.last_active', { defaultValue: 'Last Active' }) : t('staff.shift_started', { defaultValue: 'Shift Started' })}</span>
-                        <span className="text-gray-700 dark:text-gray-300 font-bold">{isOffline ? t('common.yesterday', { defaultValue: 'Yesterday' }) : shiftStart}</span>
+                        <span className={`font-bold ${(isOffline || shiftStart) ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400 dark:text-gray-600 italic'}`}>{isOffline ? t('common.yesterday', { defaultValue: 'Yesterday' }) : (shiftStart || 'Belum mulai')}</span>
                     </div>
                     <div className="flex justify-between text-xs transition-all group-hover:bg-primary/5 p-1 rounded">
                         <span className="text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider">{t('reports.efficiency_score', { defaultValue: 'Performance' })}</span>
-                        <span className="text-status-ready font-black">{rating || performance}</span>
+                        <span className={`font-black ${(rating || performance) ? 'text-status-ready' : 'text-gray-400 dark:text-gray-600 italic font-bold'}`}>{rating || performance || '-'}</span>
                     </div>
                 </div>
             </div>
