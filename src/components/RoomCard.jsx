@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 const RoomCard = ({ room, onClick }) => {
     const { t } = useTranslation();
-    const { number, type, status, lastCleaned, isVip, staff, timeLeft, progress, issue, ticket, imageURL } = room;
+    const { number, type, status, lastCleaned, isVip, staff, timeLeft, progress, issue, ticket } = room;
 
     const statusConfig = {
         available: {
@@ -55,40 +55,28 @@ const RoomCard = ({ room, onClick }) => {
             className={`group relative bg-white dark:bg-surface-dark rounded-xl overflow-hidden border-l-4 ${config.borderColor} hover:bg-gray-50 dark:hover:bg-[#333] transition-all cursor-pointer shadow-md dark:shadow-lg hover:shadow-2xl hover:-translate-y-1 ${config.grayscale ? 'grayscale' : ''} ${isVip ? 'ring-2 ring-primary/20' : ''} transition-colors duration-300`}
         >
 
-            {/* Room Image Header */}
-            <div className="h-28 w-full relative overflow-hidden bg-gray-100 dark:bg-white/5">
-                {imageURL ? (
-                    <img src={imageURL} alt={`Room ${number}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-white/5 dark:to-white/[0.02]">
-                        <span className="material-symbols-outlined text-gray-300 dark:text-gray-700 text-5xl">bed</span>
-                    </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-
-                {isVip && (
-                    <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2 py-1 rounded-lg border border-primary/30">
-                        <span className="material-symbols-outlined text-primary text-[16px] drop-shadow-md" title="VIP Guest">star</span>
-                        <span className="text-primary text-[9px] font-black uppercase tracking-widest">VIP</span>
-                    </div>
-                )}
-
-                <div className="absolute bottom-3 left-4 flex flex-col">
-                    <span className="text-4xl font-display font-black text-white tracking-widest drop-shadow-lg">
+            {/* Minimal Room Header */}
+            <div className="p-5 pb-0 flex justify-between items-start">
+                <div className="flex flex-col">
+                    <span className="text-4xl font-display font-black text-gray-900 dark:text-white tracking-widest group-hover:text-primary transition-colors">
                         {number}
                     </span>
+                    {isVip && (
+                        <div className="mt-1 flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 w-fit">
+                            <span className="material-symbols-outlined text-primary text-[14px]" title="VIP Guest">star</span>
+                            <span className="text-primary text-[9px] font-black uppercase tracking-widest">VIP</span>
+                        </div>
+                    )}
                 </div>
 
-                <div className="absolute top-3 right-3">
-                    <div className={`w-8 h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10`}>
-                        <span className={`material-symbols-outlined text-white text-[18px] ${config.animateIcon ? 'animate-pulse' : ''}`} title={config.label}>
-                            {config.icon}
-                        </span>
-                    </div>
+                <div className={`w-10 h-10 rounded-xl bg-gray-50 dark:bg-white/5 flex items-center justify-center border border-gray-100 dark:border-white/10 shadow-sm transition-all group-hover:shadow-md`}>
+                    <span className={`material-symbols-outlined ${config.iconColor} text-[24px] ${config.animateIcon ? 'animate-pulse' : ''}`} title={config.label}>
+                        {config.icon}
+                    </span>
                 </div>
             </div>
 
-            <div className="p-5 pt-4">
+            <div className="p-5 pt-3">
 
                 <div className="space-y-2">
                     {type ? (

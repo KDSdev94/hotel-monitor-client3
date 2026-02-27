@@ -24,7 +24,7 @@ ChartJS.register(
     Legend
 );
 
-export const OccupancyChart = ({ data: customData }) => {
+export const IssuesChart = ({ stats }) => {
     const options = {
         responsive: true,
         maintainAspectRatio: false,
@@ -43,9 +43,8 @@ export const OccupancyChart = ({ data: customData }) => {
         scales: {
             y: {
                 beginAtZero: true,
-                max: 100,
                 grid: { color: 'rgba(51, 51, 51, 0.4)' },
-                ticks: { color: '#666', font: { size: 10 } },
+                ticks: { color: '#666', font: { size: 10 }, stepSize: 1 },
             },
             x: {
                 grid: { display: false },
@@ -54,27 +53,20 @@ export const OccupancyChart = ({ data: customData }) => {
         },
     };
 
-    const defaultData = {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    const data = {
+        labels: ['Diselesaikan (Resolved)', 'Menunggu (Pending/Open)'],
         datasets: [
             {
-                label: 'This Week',
-                data: [75, 82, 88, 85, 95, 98, 92],
-                backgroundColor: '#f4c025',
+                label: 'Jumlah Isu',
+                data: [stats?.resolved || 0, stats?.pending || 0],
+                backgroundColor: ['#10b981', '#f43f5e'],
                 borderRadius: 4,
-                barThickness: 12,
-            },
-            {
-                label: 'Last Week',
-                data: [60, 65, 70, 75, 85, 90, 80],
-                backgroundColor: 'rgba(107, 114, 128, 0.3)',
-                borderRadius: 4,
-                barThickness: 12,
+                barThickness: 32,
             },
         ],
     };
 
-    return <Bar options={options} data={customData || defaultData} />;
+    return <Bar options={options} data={data} />;
 };
 
 export const StatusDoughnut = ({ stats }) => {

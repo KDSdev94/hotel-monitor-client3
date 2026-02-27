@@ -1,32 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { OccupancyChart, StatusDoughnut } from '../components/ReportChart';
-import { subscribeToRoomStats, subscribeToStaffPerformance, subscribeToOccupancyTrends, purgeOccupancyHistory } from '../services/reportService';
-import { subscribeToAllIssues } from '../services/issueService';
+import { StatusDoughnut } from '../components/ReportChart';
+import { subscribeToRoomStats, subscribeToStaffPerformance } from '../services/reportService';
 
 const Reports = () => {
     const { t } = useTranslation();
     const [roomStats, setRoomStats] = useState({ total: 0, available: 0, occupied: 0, cleaning: 0, maintenance: 0 });
     const [staffPerformance, setStaffPerformance] = useState([]);
-    const [occupancyTrendData, setOccupancyTrendData] = useState(null);
-    const [issuesStats, setIssuesStats] = useState({ resolved: 0, pending: 0 });
     const [loading, setLoading] = useState(true);
-    const [isPurging, setIsPurging] = useState(false);
 
-    const handlePurge = async () => {
-        if (window.confirm('Bersihkan semua data dummy tren okupansi?')) {
-            setIsPurging(true);
-            try {
-                await purgeOccupancyHistory();
-                alert('Data dummy telah dihapus. Data riil akan mulai tercatat secara otomatis.');
-            } catch (err) {
-                console.error(err);
-                alert('Gagal membersihkan data.');
-            } finally {
-                setIsPurging(false);
-            }
-        }
-    };
 
     useEffect(() => {
         const unsubscribeRooms = subscribeToRoomStats((stats) => {
@@ -34,18 +16,10 @@ const Reports = () => {
             setLoading(false);
         });
         const unsubscribeStaff = subscribeToStaffPerformance((perf) => setStaffPerformance(perf));
-        const unsubscribeOccupancy = subscribeToOccupancyTrends((data) => setOccupancyTrendData(data));
-        const unsubscribeIssues = subscribeToAllIssues((data) => {
-            const resolved = data.filter(i => i.status === 'resolved').length;
-            const pending = data.filter(i => i.status === 'pending' || i.status === 'open').length;
-            setIssuesStats({ resolved, pending });
-        });
 
         return () => {
             unsubscribeRooms();
             unsubscribeStaff();
-            unsubscribeOccupancy();
-            unsubscribeIssues();
         };
     }, []);
 
@@ -61,11 +35,12 @@ const Reports = () => {
     const occupancyRate = roomStats.total > 0 ? Math.round((roomStats.occupied / roomStats.total) * 100) : 0;
     const totalMins = staffPerformance.reduce((acc, s) => acc + parseInt(s.time || 0), 0);
     const avgMins = staffPerformance.length > 0 ? Math.round(totalMins / staffPerformance.length) : 0;
+    const activeStaff = staffPerformance.filter(s => s.status === 'On Duty' || s.status === 'Sedang Bertugas').length;
 
     const metrics = [
-        { label: 'Tasks Completed', value: staffPerformance.reduce((acc, s) => acc + (s.rooms || 0), 0), trend: 'Today', color: 'text-primary', icon: 'assignment_turned_in' },
-        { label: 'Issues Resolved', value: issuesStats.resolved, trend: 'Last 7 Days', color: 'text-emerald-500', icon: 'hotel' },
-        { label: 'Rerata Okupansi', value: `${occupancyRate}%`, trend: 'Room Sync', color: 'text-blue-500', icon: 'cleaning_services' },
+        { label: 'Kamar Dibersihkan', value: staffPerformance.reduce((acc, s) => acc + (s.rooms || 0), 0), trend: 'Hari Ini', color: 'text-primary', icon: 'cleaning_services' },
+        { label: 'Staf Aktif', value: activeStaff, trend: 'Sedang Bertugas', color: 'text-emerald-500', icon: 'groups' },
+        { label: 'Rerata Okupansi', value: `${occupancyRate}%`, trend: 'Database Sync', color: 'text-blue-500', icon: 'bed' },
         { label: 'Rerata Waktu Bersih', value: `${avgMins || 38}m`, trend: 'Target: 45m', color: 'text-status-cleaning', icon: 'schedule', down: avgMins > 45 },
     ];
 
@@ -111,65 +86,44 @@ const Reports = () => {
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-                <div className="lg:col-span-2 bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-white/5 p-6 shadow-lg transition-colors duration-300">
-                    <div className="flex justify-between items-center mb-6">
-                        <div>
-                            <h3 className="text-xl font-display font-bold text-gray-900 dark:text-white">{t('reports.occupancy_trends')}</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{t('reports.weekly_occupancy_desc')}</p>
-                        </div>
-                        <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-full">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span className="text-[10px] font-black uppercase tracking-widest">Live Real-time</span>
-                        </div>
-                    </div>
-                    <div className="h-64 flex items-center justify-center">
-                        {occupancyTrendData ? (
-                            <OccupancyChart data={occupancyTrendData} />
-                        ) : (
-                            <div className="text-center space-y-3">
-                                <div className="w-16 h-16 bg-gray-100 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto">
-                                    <span className="material-symbols-outlined text-gray-400 text-3xl">insights</span>
-                                </div>
-                                <div>
-                                    <p className="text-gray-900 dark:text-white font-bold">Belum Ada Data Tren</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto italic">
-                                        Sistem sedang merekam okupansi harian. Grafik akan muncul secara otomatis saat data operasional terkumpul.
-                                    </p>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
+            <div className="w-full mt-6 bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-white/5 p-8 shadow-xl transition-colors duration-300">
+                <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
 
-                <div className="bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-white/5 p-6 shadow-lg flex flex-col transition-colors duration-300">
-                    <h3 className="text-xl font-display font-bold text-gray-900 dark:text-white mb-1">{t('reports.room_status')}</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 font-bold">{t('reports.distribution_snapshot')}</p>
-                    <div className="flex-1 flex flex-col items-center justify-center">
-                        <div className="relative w-48 h-48 mb-6">
+                    {/* Left: Text Info */}
+                    <div className="w-full lg:w-1/3 space-y-2 text-center lg:text-left">
+                        <h3 className="text-2xl font-display font-bold text-gray-900 dark:text-white">{t('reports.room_status')}</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium leading-relaxed">{t('reports.distribution_snapshot')}</p>
+                    </div>
+
+                    {/* Middle: Doughnut Chart */}
+                    <div className="flex justify-center items-center w-full lg:w-1/3">
+                        <div className="relative w-48 h-48">
                             <StatusDoughnut stats={roomStats} />
                             <div className="absolute inset-0 m-auto w-32 h-32 flex flex-col items-center justify-center pointer-events-none">
-                                <span className="text-3xl font-display font-bold text-gray-900 dark:text-white">{roomStats.total}</span>
-                                <span className="text-[10px] text-gray-400 uppercase tracking-widest font-extrabold">{t('common.rooms')}</span>
+                                <span className="text-4xl font-display font-black text-gray-900 dark:text-white">{roomStats.total}</span>
+                                <span className="text-[10px] text-gray-400 uppercase tracking-widest font-extrabold mt-1">{t('common.rooms')}</span>
                             </div>
                         </div>
-                        <div className="w-full space-y-3 mt-auto">
-                            {[
-                                { label: 'Tersedia', val: `${roomStats.available}`, color: 'bg-status-ready' },
-                                { label: 'Kotor', val: `${roomStats.dirty}`, color: 'bg-status-dirty' },
-                                { label: 'Pembersihan', val: `${roomStats.cleaning}`, color: 'bg-status-cleaning' },
-                                { label: 'Perbaikan', val: `${roomStats.maintenance}`, color: 'bg-gray-500' },
-                            ].map((s, i) => (
-                                <div key={i} className="flex justify-between items-center text-sm">
-                                    <div className="flex items-center gap-2">
-                                        <span className={`w-2.5 h-2.5 rounded-full ${s.color} shadow-sm`}></span>
-                                        <span className="text-gray-600 dark:text-gray-400 font-bold">{s.label}</span>
-                                    </div>
-                                    <span className="font-extrabold text-gray-900 dark:text-white">{s.val}</span>
-                                </div>
-                            ))}
-                        </div>
                     </div>
+
+                    {/* Right: Modern Stats Grid */}
+                    <div className="w-full lg:w-1/3 grid grid-cols-2 gap-4">
+                        {[
+                            { label: 'Tersedia', val: `${roomStats.available}`, color: 'bg-status-ready', text: 'text-status-ready' },
+                            { label: 'Kotor', val: `${roomStats.dirty}`, color: 'bg-status-dirty', text: 'text-status-dirty' },
+                            { label: 'Pembersihan', val: `${roomStats.cleaning}`, color: 'bg-status-cleaning', text: 'text-status-cleaning' },
+                            { label: 'Perbaikan', val: `${roomStats.maintenance}`, color: 'bg-gray-500', text: 'text-gray-500' },
+                        ].map((s, i) => (
+                            <div key={i} className="bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 rounded-xl p-4 flex flex-col justify-center items-center gap-2 transition-all hover:scale-105 hover:shadow-md cursor-default group">
+                                <div className="flex items-center gap-1.5">
+                                    <span className={`w-2 h-2 rounded-full ${s.color} shadow-sm group-hover:scale-125 transition-transform`}></span>
+                                    <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">{s.label}</span>
+                                </div>
+                                <span className={`font-display font-black text-2xl ${s.text}`}>{s.val}</span>
+                            </div>
+                        ))}
+                    </div>
+
                 </div>
             </div>
 
