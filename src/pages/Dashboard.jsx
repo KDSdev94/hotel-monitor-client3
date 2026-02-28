@@ -16,7 +16,7 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const { user: authUser } = useAuth();
     const [filter, setFilter] = useState('all');
-    const [sortBy, setSortBy] = useState('Floor Number');
+    const [sortBy, setSortBy] = useState('number-asc');
     const [rooms, setRooms] = useState([]);
     const [staff, setStaff] = useState([]);
     const [roomTypes, setRoomTypes] = useState([]);
@@ -42,24 +42,27 @@ const Dashboard = () => {
     }, []);
 
     const dynamicStats = [
-        { title: 'Semua Kamar', value: rooms.length, icon: 'bed', color: 'text-primary' },
-        { title: 'Tersedia', value: rooms.filter(r => r.status === 'available').length, icon: 'check_circle', color: 'text-status-ready', trend: '+5%', down: false },
-        { title: 'Kotor', value: rooms.filter(r => r.status === 'dirty').length, icon: 'cleaning_services', color: 'text-status-dirty', trend: '+12%', down: false },
-        { title: 'Pembersihan', value: rooms.filter(r => r.status === 'cleaning').length, icon: 'cleaning_services', color: 'text-status-cleaning', trend: '-2%', down: true },
-        { title: 'Perbaikan', value: rooms.filter(r => r.status === 'maintenance').length, icon: 'handyman', color: 'text-gray-500', trend: '0%', down: false },
+        { title: t('common.all_rooms', { defaultValue: 'All Rooms' }), value: rooms.length, icon: 'bed', color: 'text-primary' },
+        { title: t('common.available', { defaultValue: 'Available' }), value: rooms.filter(r => r.status === 'available').length, icon: 'check_circle', color: 'text-status-ready', trend: '+5%', down: false },
+        { title: t('common.dirty', { defaultValue: 'Dirty' }), value: rooms.filter(r => r.status === 'dirty').length, icon: 'cleaning_services', color: 'text-status-dirty', trend: '+12%', down: false },
+        { title: t('common.cleaning', { defaultValue: 'Cleaning' }), value: rooms.filter(r => r.status === 'cleaning').length, icon: 'cleaning_services', color: 'text-status-cleaning', trend: '-2%', down: true },
+        { title: t('common.maintenance', { defaultValue: 'Maintenance' }), value: rooms.filter(r => r.status === 'maintenance').length, icon: 'handyman', color: 'text-gray-500', trend: '0%', down: false },
     ];
 
     const filters = [
-        { id: 'all', label: 'Semua Kamar', count: rooms.length },
-        { id: 'available', label: 'Tersedia', count: rooms.filter(r => r.status === 'available').length, color: 'bg-status-ready' },
-        { id: 'dirty', label: 'Kotor', count: rooms.filter(r => r.status === 'dirty').length, color: 'bg-status-dirty' },
-        { id: 'cleaning', label: 'Pembersihan', count: rooms.filter(r => r.status === 'cleaning').length, color: 'bg-status-cleaning' },
-        { id: 'maintenance', label: 'Perbaikan', count: rooms.filter(r => r.status === 'maintenance').length, color: 'bg-gray-500' },
+        { id: 'all', label: t('common.all_rooms', { defaultValue: 'All Rooms' }), count: rooms.length },
+        { id: 'available', label: t('common.available', { defaultValue: 'Available' }), count: rooms.filter(r => r.status === 'available').length, color: 'bg-status-ready' },
+        { id: 'dirty', label: t('common.dirty', { defaultValue: 'Dirty' }), count: rooms.filter(r => r.status === 'dirty').length, color: 'bg-status-dirty' },
+        { id: 'cleaning', label: t('common.cleaning', { defaultValue: 'Cleaning' }), count: rooms.filter(r => r.status === 'cleaning').length, color: 'bg-status-cleaning' },
+        { id: 'maintenance', label: t('common.maintenance', { defaultValue: 'Maintenance' }), count: rooms.filter(r => r.status === 'maintenance').length, color: 'bg-gray-500' },
     ];
 
     const sortOptions = [
-        t('common.floor'),
-        t('common.status')
+        { value: 'number-asc', label: t('common.number_asc', { defaultValue: 'Number (A-Z)' }) },
+        { value: 'number-desc', label: t('common.number_desc', { defaultValue: 'Number (Z-A)' }) },
+        { value: 'status', label: t('common.status', { defaultValue: 'Status' }) },
+        { value: 'type', label: t('common.type', { defaultValue: 'Room Type' }) },
+        { value: 'floor', label: t('common.floor', { defaultValue: 'Floor' }) }
     ];
 
     const [viewMode, setViewMode] = useState('grid');
@@ -68,11 +71,22 @@ const Dashboard = () => {
         let result = filter === 'all' ? rooms : rooms.filter(room => room.status === filter);
 
         // Handle sorting
-        if (sortBy === 'Floor' || sortBy === 'Lantai') {
-            result = [...result].sort((a, b) => (a.number || '').localeCompare(b.number || ''));
-        } else if (sortBy === 'Status') {
-            result = [...result].sort((a, b) => (a.status || '').localeCompare(b.status || ''));
-        }
+        result.sort((a, b) => {
+            switch (sortBy) {
+                case 'number-asc':
+                    return (a.number || '').localeCompare((b.number || ''), undefined, { numeric: true });
+                case 'number-desc':
+                    return (b.number || '').localeCompare((a.number || ''), undefined, { numeric: true });
+                case 'status':
+                    return (a.status || '').localeCompare(b.status || '');
+                case 'type':
+                    return (a.type || '').localeCompare(b.type || '');
+                case 'floor':
+                    return (String(a.floor || '')).localeCompare(String(b.floor || ''), undefined, { numeric: true });
+                default:
+                    return 0;
+            }
+        });
 
         return result;
     }, [rooms, filter, sortBy]);
@@ -153,12 +167,12 @@ const Dashboard = () => {
                         <table className="w-full text-left">
                             <thead className="bg-gray-50 dark:bg-surface-darker/50 border-b border-gray-100 dark:border-white/5">
                                 <tr>
-                                    <th className="px-6 py-4 text-[10px] font-extrabold text-primary uppercase tracking-widest">Kamar</th>
-                                    <th className="px-6 py-4 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Tipe</th>
-                                    <th className="px-6 py-4 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Lantai</th>
-                                    <th className="px-6 py-4 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Status</th>
-                                    <th className="px-6 py-4 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Staf</th>
-                                    <th className="px-6 py-4 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest text-right">Aksi</th>
+                                    <th className="px-6 py-4 text-[10px] font-extrabold text-primary uppercase tracking-widest">{t('common.room', { defaultValue: 'Room' })}</th>
+                                    <th className="px-6 py-4 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">{t('common.type', { defaultValue: 'Type' })}</th>
+                                    <th className="px-6 py-4 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">{t('common.floor', { defaultValue: 'Floor' })}</th>
+                                    <th className="px-6 py-4 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">{t('common.status', { defaultValue: 'Status' })}</th>
+                                    <th className="px-6 py-4 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">{t('common.staff', { defaultValue: 'Staff' })}</th>
+                                    <th className="px-6 py-4 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest text-right">{t('common.action', { defaultValue: 'Action' })}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50 dark:divide-white/5">
@@ -171,9 +185,9 @@ const Dashboard = () => {
                                         <td className="px-6 py-4 text-sm font-medium text-gray-500">{room.floor}</td>
                                         <td className="px-6 py-4">
                                             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase border ${room.status === 'available' ? 'bg-status-ready/10 text-status-ready border-status-ready/20' :
-                                                    room.status === 'occupied' ? 'bg-primary/10 text-primary border-primary/20' :
-                                                        room.status === 'dirty' ? 'bg-status-dirty/10 text-status-dirty border-status-dirty/20' :
-                                                            'bg-status-cleaning/10 text-status-cleaning border-status-cleaning/20'
+                                                room.status === 'occupied' ? 'bg-primary/10 text-primary border-primary/20' :
+                                                    room.status === 'dirty' ? 'bg-status-dirty/10 text-status-dirty border-status-dirty/20' :
+                                                        'bg-status-cleaning/10 text-status-cleaning border-status-cleaning/20'
                                                 }`}>
                                                 {room.status}
                                             </span>
@@ -187,7 +201,7 @@ const Dashboard = () => {
                                                     <span className="text-xs font-bold text-gray-700 dark:text-gray-300">{room.staff.name}</span>
                                                 </div>
                                             ) : (
-                                                <span className="text-[10px] text-gray-400 font-bold italic">Belum Ada</span>
+                                                <span className="text-[10px] text-gray-400 font-bold italic">{t('dashboard.pending', { defaultValue: 'Pending' })}</span>
                                             )}
                                         </td>
                                         <td className="px-6 py-4 text-right">

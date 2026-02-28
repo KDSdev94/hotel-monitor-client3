@@ -138,7 +138,7 @@ const StaffProfile = () => {
                                 <span className="text-[10px] font-bold uppercase tracking-[0.1em] px-2 py-0.5 rounded bg-[#f4c025]/10 text-[#f4c025]">{profileData.role}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-400 dark:text-gray-600">Status</span>
+                                <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-gray-400 dark:text-gray-600">{t('common.status', { defaultValue: 'Status' })}</span>
                                 <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-emerald-500">
                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                                     {t('staff_portal.active')}
@@ -173,7 +173,7 @@ const StaffProfile = () => {
                 <div className="lg:col-span-3 space-y-5">
                     <div className="bg-white dark:bg-[#161616] rounded-2xl border border-black/[0.04] dark:border-white/[0.04] p-6 md:p-8">
                         <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-base font-display font-bold text-gray-900 dark:text-white">{t('staff_portal.personal_info')}</h3>
+                            <h3 className="text-base font-display font-bold text-gray-900 dark:text-white">{t('staff_portal.personal_info')}</h3>
                             {!isEditing ? (
                                 <button
                                     onClick={() => { setEditData({ ...profileData }); setIsEditing(true); }}

@@ -175,7 +175,7 @@ const StaffModal = ({ isOpen, onClose, staff, roles = [] }) => {
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-extrabold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1.5">Status</label>
+                    <label className="block text-[10px] font-extrabold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1.5">{t('common.status', { defaultValue: 'Status' })}</label>
                     <select
                         className="w-full bg-gray-50 dark:bg-surface-darker border border-gray-200 dark:border-white/10 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white font-bold outline-none focus:ring-1 focus:ring-primary transition-all"
                         value={formData.status}

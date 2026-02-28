@@ -7,7 +7,7 @@ const StaffCard = ({ staff, onEdit }) => {
 
     const handleWhatsAppRedirect = () => {
         if (!phone) {
-            alert('Nomor telepon tidak ditemukan untuk staf ini.');
+            alert(t('staff.no_phone', { defaultValue: 'Phone number not found for this staff.' }));
             return;
         }
 
@@ -16,8 +16,10 @@ const StaffCard = ({ staff, onEdit }) => {
         if (formattedPhone.startsWith('0')) {
             formattedPhone = '62' + formattedPhone.substring(1);
         }
-
-        const message = encodeURIComponent(`Halo ${name},\nAda tugas untuk pengelolaan kamar.\nSilakan segera ditindaklanjuti.\n\nTerima kasih.`);
+        const message = encodeURIComponent(t('rooms.whatsapp_message', {
+            defaultValue: `Hello {{name}},\nThere is a task for room management.\nPlease follow up immediately.\n\nThank you.`,
+            name: name
+        }));
         const url = `https://wa.me/${formattedPhone}?text=${message}`;
         window.open(url, '_blank');
     };
@@ -78,11 +80,11 @@ const StaffCard = ({ staff, onEdit }) => {
                 <div className="mt-6 space-y-3">
                     <div className="flex justify-between text-xs border-b border-gray-50 dark:border-gray-700 pb-2">
                         <span className="text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider">{t('staff.current_task', { defaultValue: 'Current Task' })}</span>
-                        <span className={`font-bold ${currentTask ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-600 italic'}`}>{currentTask || 'Tidak ada tugas'}</span>
+                        <span className={`font-bold ${currentTask ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-600 italic'}`}>{currentTask || t('staff.no_task', { defaultValue: 'No tasks' })}</span>
                     </div>
                     <div className="flex justify-between text-xs border-b border-gray-50 dark:border-gray-700 pb-2">
                         <span className="text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider">{isOffline ? t('staff.last_active', { defaultValue: 'Last Active' }) : t('staff.shift_started', { defaultValue: 'Shift Started' })}</span>
-                        <span className={`font-bold ${(isOffline || shiftStart) ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400 dark:text-gray-600 italic'}`}>{isOffline ? t('common.yesterday', { defaultValue: 'Yesterday' }) : (shiftStart || 'Belum mulai')}</span>
+                        <span className={`font-bold ${(isOffline || shiftStart) ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400 dark:text-gray-600 italic'}`}>{isOffline ? t('common.yesterday', { defaultValue: 'Yesterday' }) : (shiftStart || t('staff.not_started', { defaultValue: 'Not started' }))}</span>
                     </div>
                     <div className="flex justify-between text-xs transition-all group-hover:bg-primary/5 p-1 rounded">
                         <span className="text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider">{t('reports.efficiency_score', { defaultValue: 'Performance' })}</span>

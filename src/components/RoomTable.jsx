@@ -14,7 +14,7 @@ const RoomTable = ({ rooms, onEdit }) => {
 
     const handleWhatsAppRedirect = (staff) => {
         if (!staff || !staff.phone) {
-            alert('Nomor telepon tidak ditemukan untuk staf ini.');
+            alert(t('rooms.no_phone', { defaultValue: 'Phone number not found for this staff.' }));
             return;
         }
 
@@ -24,7 +24,10 @@ const RoomTable = ({ rooms, onEdit }) => {
             phone = '62' + phone.substring(1);
         }
 
-        const message = encodeURIComponent(`Halo ${staff.name},\nAda tugas untuk kamar pengelolaan.\nSilakan segera ditindaklanjuti.\n\nTerima kasih.`);
+        const message = encodeURIComponent(t('rooms.whatsapp_message', {
+            defaultValue: `Hello {{name}},\nThere is a task for room management.\nPlease follow up immediately.\n\nThank you.`,
+            name: staff.name
+        }));
         const url = `https://wa.me/${phone}?text=${message}`;
         window.open(url, '_blank');
     };
@@ -35,11 +38,11 @@ const RoomTable = ({ rooms, onEdit }) => {
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-gray-50 dark:bg-surface-darker border-b border-gray-100 dark:border-gray-700 transition-colors duration-300">
-                            <th className="py-4 px-6 text-[10px] font-extrabold text-primary uppercase tracking-widest w-[120px]">{t('common.room')} No.</th>
-                            <th className="py-4 px-6 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Type</th>
+                            <th className="py-4 px-6 text-[10px] font-extrabold text-primary uppercase tracking-widest w-[120px]">{t('common.room')} {t('common.number', { defaultValue: 'Number' })}</th>
+                            <th className="py-4 px-6 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest">{t('common.type', { defaultValue: 'Type' })}</th>
                             <th className="py-4 px-6 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest">{t('common.floor')}</th>
                             <th className="py-4 px-6 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest">{t('common.status')}</th>
-                            <th className="py-4 px-6 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Last Staff</th>
+                            <th className="py-4 px-6 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest">{t('rooms.last_staff', { defaultValue: 'Last Staff' })}</th>
                             <th className="py-4 px-6 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest text-right">{t('common.action')}</th>
                         </tr>
                     </thead>

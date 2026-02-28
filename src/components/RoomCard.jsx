@@ -87,7 +87,7 @@ const RoomCard = ({ room, onClick }) => {
                     ) : null}
 
                     <div className="flex justify-between items-center">
-                        <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-widest font-bold">Status</span>
+                        <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-widest font-bold">{t('common.status', { defaultValue: 'Status' })}</span>
                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider ${config.labelColor}`}>
                             {config.label}
                         </span>

@@ -38,10 +38,10 @@ const Reports = () => {
     const activeStaff = staffPerformance.filter(s => s.status === 'On Duty' || s.status === 'Sedang Bertugas').length;
 
     const metrics = [
-        { label: 'Kamar Dibersihkan', value: staffPerformance.reduce((acc, s) => acc + (s.rooms || 0), 0), trend: 'Hari Ini', color: 'text-primary', icon: 'cleaning_services' },
-        { label: 'Staf Aktif', value: activeStaff, trend: 'Sedang Bertugas', color: 'text-emerald-500', icon: 'groups' },
-        { label: 'Rerata Okupansi', value: `${occupancyRate}%`, trend: 'Database Sync', color: 'text-blue-500', icon: 'bed' },
-        { label: 'Rerata Waktu Bersih', value: `${avgMins || 38}m`, trend: 'Target: 45m', color: 'text-status-cleaning', icon: 'schedule', down: avgMins > 45 },
+        { label: t('reports.rooms_cleaned', { defaultValue: 'Rooms Cleaned' }), value: staffPerformance.reduce((acc, s) => acc + (s.rooms || 0), 0), trend: 'Hari Ini', color: 'text-primary', icon: 'cleaning_services' },
+        { label: t('reports.active_staff', { defaultValue: 'Active Staff' }), value: activeStaff, trend: t('reports.on_duty_trend', { defaultValue: 'On Duty' }), color: 'text-emerald-500', icon: 'groups' },
+        { label: t('reports.avg_occupancy', { defaultValue: 'Avg Occupancy' }), value: `${occupancyRate}%`, trend: t('reports.database_sync', { defaultValue: 'Database Sync' }), color: 'text-blue-500', icon: 'bed' },
+        { label: t('reports.avg_cleaning_time', { defaultValue: 'Avg Cleaning Time' }), value: `${avgMins || 38}m`, trend: t('reports.target_45m', { defaultValue: 'Target: 45m' }), color: 'text-status-cleaning', icon: 'schedule', down: avgMins > 45 },
     ];
 
     return (
@@ -109,10 +109,10 @@ const Reports = () => {
                     {/* Right: Modern Stats Grid */}
                     <div className="w-full lg:w-1/3 grid grid-cols-2 gap-4">
                         {[
-                            { label: 'Tersedia', val: `${roomStats.available}`, color: 'bg-status-ready', text: 'text-status-ready' },
-                            { label: 'Kotor', val: `${roomStats.dirty}`, color: 'bg-status-dirty', text: 'text-status-dirty' },
-                            { label: 'Pembersihan', val: `${roomStats.cleaning}`, color: 'bg-status-cleaning', text: 'text-status-cleaning' },
-                            { label: 'Perbaikan', val: `${roomStats.maintenance}`, color: 'bg-gray-500', text: 'text-gray-500' },
+                            { label: t('common.available', { defaultValue: 'Available' }), val: `${roomStats.available}`, color: 'bg-status-ready', text: 'text-status-ready' },
+                            { label: t('common.dirty', { defaultValue: 'Dirty' }), val: `${roomStats.dirty}`, color: 'bg-status-dirty', text: 'text-status-dirty' },
+                            { label: t('common.cleaning', { defaultValue: 'Cleaning' }), val: `${roomStats.cleaning}`, color: 'bg-status-cleaning', text: 'text-status-cleaning' },
+                            { label: t('common.maintenance', { defaultValue: 'Maintenance' }), val: `${roomStats.maintenance}`, color: 'bg-gray-500', text: 'text-gray-500' },
                         ].map((s, i) => (
                             <div key={i} className="bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 rounded-xl p-4 flex flex-col justify-center items-center gap-2 transition-all hover:scale-105 hover:shadow-md cursor-default group">
                                 <div className="flex items-center gap-1.5">

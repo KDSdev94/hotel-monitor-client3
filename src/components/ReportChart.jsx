@@ -54,7 +54,10 @@ export const IssuesChart = ({ stats }) => {
     };
 
     const data = {
-        labels: ['Diselesaikan (Resolved)', 'Menunggu (Pending/Open)'],
+        labels: [
+            t('reports.resolved', { defaultValue: 'Resolved' }),
+            t('reports.pending', { defaultValue: 'Pending' })
+        ],
         datasets: [
             {
                 label: 'Jumlah Isu',

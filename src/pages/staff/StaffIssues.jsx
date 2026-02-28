@@ -119,7 +119,7 @@ const StaffIssues = () => {
                             value={formData.roomNumber}
                             onChange={(e) => setFormData(prev => ({ ...prev, roomNumber: e.target.value }))}
                         >
-                            <option value="">-- Pilih Kamar --</option>
+                            <option value="">{t('staff_portal.select_room_placeholder', { defaultValue: '-- Select Room --' })}</option>
                             {rooms.map(room => (
                                 <option key={room.id} value={room.number}>{room.number} - {room.type}</option>
                             ))}
@@ -154,7 +154,7 @@ const StaffIssues = () => {
                     </label>
                     <textarea
                         className="w-full bg-gray-50 dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] rounded-xl px-3.5 py-3 text-[13px] text-gray-900 dark:text-white placeholder-gray-400 focus:ring-1 focus:ring-[#f4c025]/50 outline-none font-medium resize-none transition-all leading-relaxed"
-                        placeholder="Contoh: AC bocor, lampu kamar mandi mati, dll..."
+                        placeholder={t('staff_portal.issue_placeholder', { defaultValue: "Example: AC is leaking, bathroom light is dead, etc..." })}
                         rows={4}
                         maxLength={500}
                         value={formData.description}
@@ -208,7 +208,7 @@ const StaffIssues = () => {
                     ))}
                     {filteredIssues.length === 0 && (
                         <div className="py-12 text-center bg-gray-50 dark:bg-white/[0.02] rounded-2xl border border-dashed border-black/10 dark:border-white/10">
-                        <p className="text-sm text-gray-400 font-medium">{t('staff_portal.no_report_history')}</p>
+                            <p className="text-sm text-gray-400 font-medium">{t('staff_portal.no_report_history')}</p>
                         </div>
                     )}
                 </div>

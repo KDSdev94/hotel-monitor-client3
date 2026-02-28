@@ -39,9 +39,13 @@ const FilterBar = ({
                     onChange={(e) => onSortChange(e.target.value)}
                     className="bg-gray-100 dark:bg-surface-dark text-gray-900 dark:text-white text-xs font-bold border-none rounded-lg focus:ring-1 focus:ring-primary py-1.5 pl-3 pr-8 cursor-pointer outline-none"
                 >
-                    {sortOptions.map(opt => (
-                        <option key={opt} value={opt}>{opt}</option>
-                    ))}
+                    {sortOptions.map(opt => {
+                        const val = typeof opt === 'object' ? opt.value : opt;
+                        const label = typeof opt === 'object' ? opt.label : opt;
+                        return (
+                            <option key={val} value={val}>{label}</option>
+                        );
+                    })}
                 </select>
 
                 <div className="h-6 w-[1px] bg-gray-200 dark:bg-gray-700 mx-1"></div>

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from './Modal';
-import ImageUpload from './ImageUpload';
 import { addRoom, updateRoom } from '../services/roomService';
 import { createTask } from '../services/taskService';
 
@@ -74,7 +73,7 @@ const RoomModal = ({ isOpen, onClose, room, roomTypes = [], staffList = [] }) =>
             onClose();
         } catch (error) {
             console.error("Failed to save room:", error);
-            alert("Error saving room. Please try again.");
+            alert(t('common.error', { defaultValue: 'Error saving data. Please try again.' }));
         }
     };
 
@@ -112,16 +111,11 @@ const RoomModal = ({ isOpen, onClose, room, roomTypes = [], staffList = [] }) =>
             footer={footer}
         >
             <form className="space-y-4" onSubmit={handleSubmit}>
-                <ImageUpload
-                    onUploadSuccess={(url) => setFormData({ ...formData, imageURL: url })}
-                    defaultImage={formData.imageURL}
-                    label="Room Photo"
-                />
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <label className="block text-[10px] font-extrabold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1.5">
-                            {t('common.room', { defaultValue: 'Room' })} Number
+                            {t('common.room', { defaultValue: 'Room' })} {t('common.number', { defaultValue: 'Number' })}
                         </label>
                         <input
                             type="text"
@@ -133,7 +127,7 @@ const RoomModal = ({ isOpen, onClose, room, roomTypes = [], staffList = [] }) =>
                         />
                     </div>
                     <div>
-                        <label className="block text-[10px] font-extrabold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1.5">Floor</label>
+                        <label className="block text-[10px] font-extrabold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1.5">{t('common.floor', { defaultValue: 'Floor' })}</label>
                         <input
                             type="number"
                             className="w-full bg-gray-50 dark:bg-surface-darker border border-gray-200 dark:border-white/10 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white font-bold outline-none focus:ring-1 focus:ring-primary transition-all"
@@ -145,7 +139,7 @@ const RoomModal = ({ isOpen, onClose, room, roomTypes = [], staffList = [] }) =>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-[10px] font-extrabold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1.5">Type</label>
+                        <label className="block text-[10px] font-extrabold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1.5">{t('common.type', { defaultValue: 'Type' })}</label>
                         <select
                             className="w-full bg-gray-50 dark:bg-surface-darker border border-gray-200 dark:border-white/10 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white font-bold outline-none focus:ring-1 focus:ring-primary transition-all"
                             value={formData.type}
@@ -158,7 +152,7 @@ const RoomModal = ({ isOpen, onClose, room, roomTypes = [], staffList = [] }) =>
                         </select>
                     </div>
                     <div>
-                        <label className="block text-[10px] font-extrabold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1.5">Status</label>
+                        <label className="block text-[10px] font-extrabold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1.5">{t('common.status', { defaultValue: 'Status' })}</label>
                         <select
                             className="w-full bg-gray-50 dark:bg-surface-darker border border-gray-200 dark:border-white/10 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white font-bold outline-none focus:ring-1 focus:ring-primary transition-all"
                             value={formData.status}
@@ -177,7 +171,7 @@ const RoomModal = ({ isOpen, onClose, room, roomTypes = [], staffList = [] }) =>
                 <div className="pt-2 border-t border-gray-100 dark:border-white/5">
                     <label className="block text-[10px] font-extrabold uppercase tracking-widest text-primary mb-2 flex items-center gap-2">
                         <span className="material-symbols-outlined text-[16px]">assignment_ind</span>
-                        Assign Staff Member
+                        {t('rooms.assign_staff', { defaultValue: 'Assign Staff Member' })}
                     </label>
                     <div className="relative group">
                         <select
@@ -197,7 +191,7 @@ const RoomModal = ({ isOpen, onClose, room, roomTypes = [], staffList = [] }) =>
                         </span>
                     </div>
                     <p className="mt-2 text-[10px] text-gray-500 font-medium italic">
-                        Staf ini akan bertanggung jawab atas kebersihan/pemeliharaan kamar ini.
+                        {t('rooms.assign_staff_desc', { defaultValue: 'This staff member will be responsible for cleaning/maintaining this room.' })}
                     </p>
                 </div>
             </form>

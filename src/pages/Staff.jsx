@@ -47,7 +47,7 @@ const Staff = () => {
     };
 
     const handleDeleteRole = async (roleId) => {
-        if (window.confirm('Hapus role ini? Anggota staff dengan role ini mungkin perlu diupdate manual.')) {
+        if (window.confirm(t('staff.confirm_delete_role', { defaultValue: 'Delete this role? Staff members with this role might need to be updated manually.' }))) {
             try {
                 await deleteRole(roleId);
             } catch (error) {
@@ -99,13 +99,13 @@ const Staff = () => {
                         onClick={() => setActiveTab('staff')}
                         className={`flex-1 lg:flex-none px-6 py-2 rounded-lg font-bold text-sm transition-all ${activeTab === 'staff' ? 'bg-white dark:bg-surface-dark shadow-sm text-primary' : 'text-gray-500'}`}
                     >
-                        Staff Members
+                        {t('staff.tab_staff_members', { defaultValue: 'Staff Members' })}
                     </button>
                     <button
                         onClick={() => setActiveTab('roles')}
                         className={`flex-1 lg:flex-none px-6 py-2 rounded-lg font-bold text-sm transition-all ${activeTab === 'roles' ? 'bg-white dark:bg-surface-dark shadow-sm text-primary' : 'text-gray-500'}`}
                     >
-                        Role Management
+                        {t('staff.tab_role_management', { defaultValue: 'Role Management' })}
                     </button>
                 </div>
             </div>
@@ -153,17 +153,17 @@ const Staff = () => {
             ) : (
                 <div className="mt-8 max-w-2xl mx-auto space-y-6">
                     <div className="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-gray-100 dark:border-white/5 shadow-xl">
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Tambah Role Baru</h3>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">{t('staff.add_new_role', { defaultValue: 'Add New Role' })}</h3>
                         <form onSubmit={handleAddRole} className="flex gap-3">
                             <input
                                 type="text"
                                 value={newRoleName}
                                 onChange={(e) => setNewRoleName(e.target.value)}
-                                placeholder="Nama Role (misal: Supervisor)"
+                                placeholder={t('staff.role_name_placeholder', { defaultValue: 'Role Name (e.g., Supervisor)' })}
                                 className="flex-1 bg-gray-50 dark:bg-surface-darker border border-gray-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white font-bold outline-none focus:ring-1 focus:ring-primary transition-all"
                             />
-                            <button type="submit" className="bg-primary text-black px-6 py-2.5 rounded-xl font-extrabold text-sm hover:bg-primary-dark transition-all shadow-lg active:scale-95">
-                                TAMBAH
+                            <button type="submit" className="bg-primary text-black px-6 py-2.5 rounded-xl font-extrabold text-sm hover:bg-primary-dark transition-all shadow-lg active:scale-95 uppercase tracking-widest">
+                                {t('common.add', { defaultValue: 'Add' })}
                             </button>
                         </form>
                     </div>
@@ -172,9 +172,9 @@ const Staff = () => {
                         <table className="w-full text-left">
                             <thead className="bg-gray-50 dark:bg-surface-darker border-b border-gray-100 dark:border-white/5">
                                 <tr>
-                                    <th className="px-6 py-4 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Role Name</th>
-                                    <th className="px-6 py-4 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Staff Count</th>
-                                    <th className="px-6 py-4 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest text-right">Action</th>
+                                    <th className="px-6 py-4 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">{t('staff.role_name', { defaultValue: 'Role Name' })}</th>
+                                    <th className="px-6 py-4 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">{t('staff.staff_count', { defaultValue: 'Staff Count' })}</th>
+                                    <th className="px-6 py-4 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest text-right">{t('common.action', { defaultValue: 'Action' })}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50 dark:divide-white/5">
