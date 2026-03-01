@@ -57,8 +57,8 @@ const StaffModal = ({ isOpen, onClose, staff, roles = [] }) => {
         e.preventDefault();
 
         // Basic validation
-        if (!formData.name || !formData.phone) {
-            alert('Nama dan Nomor Telepon wajib diisi.');
+        if (!formData.name) {
+            alert('Nama wajib diisi.');
             return;
         }
 
@@ -133,17 +133,16 @@ const StaffModal = ({ isOpen, onClose, staff, roles = [] }) => {
 
                 <div>
                     <label className="block text-[10px] font-extrabold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1.5">
-                        Phone / WhatsApp (Auto-convert: 08... → 628...)
+                        Phone / WhatsApp (Optional)
                     </label>
                     <input
                         type="tel"
-                        required
                         className="w-full bg-gray-50 dark:bg-surface-darker border border-gray-200 dark:border-white/10 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white font-bold outline-none focus:ring-1 focus:ring-primary transition-all font-mono"
                         value={formData.phone}
                         onChange={(e) => handlePhoneChange(e.target.value)}
                         placeholder="6281234567890"
                     />
-                    <p className="text-[9px] text-gray-400 mt-1 italic uppercase tracking-widest">Minimal 10 digits, numbers only.</p>
+                    <p className="text-[9px] text-gray-400 mt-1 italic uppercase tracking-widest">Minimal 10 digits, numbers only. Auto-converts 08 to 628.</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
