@@ -11,6 +11,7 @@ const StaffRooms = () => {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
+    const [sortBy, setSortBy] = useState('number-asc');
     const [selectedRoom, setSelectedRoom] = useState(null);
 
     useEffect(() => {
@@ -32,6 +33,19 @@ const StaffRooms = () => {
             room.type?.toLowerCase().includes(search.toLowerCase());
         const matchStatus = filterStatus === 'all' || room.status === filterStatus;
         return matchSearch && matchStatus;
+    }).sort((a, b) => {
+        switch (sortBy) {
+            case 'number-asc':
+                return a.number.localeCompare(b.number, undefined, { numeric: true });
+            case 'number-desc':
+                return b.number.localeCompare(a.number, undefined, { numeric: true });
+            case 'status':
+                return (a.status || '').localeCompare(b.status || '');
+            case 'type':
+                return (a.type || '').localeCompare(b.type || '');
+            default:
+                return 0;
+        }
     });
 
     const handleRoomClick = (room) => {
@@ -64,7 +78,7 @@ const StaffRooms = () => {
                 </div>
             </div>
 
-            <div className="bg-white dark:bg-[#161616] rounded-2xl border border-black/[0.04] dark:border-white/[0.04] p-4 flex flex-col md:flex-row gap-4">
+            <div className="bg-white dark:bg-[#161616] rounded-2xl border border-black/[0.04] dark:border-white/[0.04] p-4 flex flex-col lg:flex-row gap-4">
                 <div className="relative flex-1">
                     <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[20px]">search</span>
                     <input
@@ -74,7 +88,21 @@ const StaffRooms = () => {
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
-                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                <div className="relative w-full lg:w-48">
+                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[20px]">sort</span>
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="w-full bg-gray-50 dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] rounded-xl pl-10 pr-8 py-2.5 text-sm text-gray-900 dark:text-white font-medium outline-none focus:ring-1 focus:ring-[#f4c025]/50 transition-all appearance-none cursor-pointer"
+                    >
+                        <option value="number-asc">{t('common.number_asc', { defaultValue: 'Number (A-Z)' })}</option>
+                        <option value="number-desc">{t('common.number_desc', { defaultValue: 'Number (Z-A)' })}</option>
+                        <option value="status">{t('common.status', { defaultValue: 'Status' })}</option>
+                        <option value="type">{t('common.type', { defaultValue: 'Room Type' })}</option>
+                    </select>
+                    <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-[20px]">expand_more</span>
+                </div>
+                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 items-center">
                     {['all', 'dirty', 'cleaning', 'maintenance', 'available'].map(s => (
                         <button
                             key={s}
