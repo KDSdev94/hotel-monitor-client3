@@ -38,6 +38,8 @@ const Login = () => {
         <AuthLayout
             title={t('common.login')}
             subtitle={t('login.welcome_subtitle', { defaultValue: 'Masukkan detail akun Anda untuk masuk ke sistem monitoring.' })}
+            imageUrl="/login.jpeg"
+            imageQuote={t('login.image_quote', { defaultValue: 'Experience the Art of Hospitality' })}
         >
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                 {error && (

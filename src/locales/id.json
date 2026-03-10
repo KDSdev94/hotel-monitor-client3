@@ -49,6 +49,7 @@
     },
     "login": {
         "welcome_subtitle": "Masukkan detail akun Anda untuk masuk ke sistem monitoring.",
+        "image_quote": "Rasakan Seni dalam Keramahtamahan",
         "forgot_password": "Lupa Password?",
         "new_staff": "Staf baru?",
         "activate_account": "Aktivasi Akun",
@@ -57,6 +58,7 @@
     "forgot_password": {
         "title": "Reset Password",
         "subtitle": "Masukkan alamat email yang terdaftar dan kami akan mengirimkan tautan untuk mengatur ulang kata sandi Anda.",
+        "image_quote": "Temukan Kembali Ketenangan Pikiran",
         "send_button": "KIRIM INSTRUKSI",
         "back_to_login": "Kembali ke Login",
         "success_message": "Instruksi telah dikirim! Silakan periksa kotak masuk email Anda.",
@@ -65,6 +67,7 @@
     "activate": {
         "title": "Aktivasi Akun",
         "subtitle": "Pilih nama Anda dan atur kredensial masuk Anda.",
+        "image_quote": "Bergabunglah dengan tim kami dan definisikan ulang layanan mewah.",
         "select_name": "Pilih Nama Anda",
         "select_placeholder": "Pilih dari daftar...",
         "password_placeholder": "Buat kata sandi yang kuat",

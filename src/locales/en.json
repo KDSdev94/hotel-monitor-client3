@@ -49,6 +49,7 @@
     },
     "login": {
         "welcome_subtitle": "Enter your account details to access the monitoring system.",
+        "image_quote": "Experience the Art of Hospitality",
         "forgot_password": "Forgot Password?",
         "new_staff": "New staff?",
         "activate_account": "Activate Account",
@@ -57,6 +58,7 @@
     "forgot_password": {
         "title": "Reset Password",
         "subtitle": "Enter your registered email address and we'll send you a link to reset your password.",
+        "image_quote": "Rediscover Peace of Mind",
         "send_button": "SEND INSTRUCTIONS",
         "back_to_login": "Back to Login",
         "success_message": "Instructions have been sent! Please check your email inbox.",
@@ -65,6 +67,7 @@
     "activate": {
         "title": "Activate Account",
         "subtitle": "Select your name and set up your login credentials.",
+        "image_quote": "Join our team and redefine luxury service.",
         "select_name": "Select Your Name",
         "select_placeholder": "Select from list...",
         "password_placeholder": "Create a strong password",

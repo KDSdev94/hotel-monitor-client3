@@ -30,7 +30,7 @@ const ForgotPassword = () => {
         <AuthLayout
             title={t('forgot_password.title', { defaultValue: 'Reset Password' })}
             subtitle={t('forgot_password.subtitle', { defaultValue: 'Masukkan alamat email yang terdaftar dan kami akan mengirimkan tautan untuk mengatur ulang kata sandi Anda.' })}
-            imageQuote="Rediscover Peace of Mind"
+            imageQuote={t('forgot_password.image_quote', { defaultValue: 'Rediscover Peace of Mind' })}
         >
             <form onSubmit={handleSubmit} className="flex flex-col gap-8">
                 {status.message && (

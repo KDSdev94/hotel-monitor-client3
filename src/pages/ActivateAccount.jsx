@@ -59,7 +59,7 @@ const ActivateAccount = () => {
         <AuthLayout
             title={t('activate.title', { defaultValue: 'Aktivasi Akun' })}
             subtitle={t('activate.subtitle', { defaultValue: 'Pilih nama Anda dan atur kredensial masuk Anda.' })}
-            imageQuote="Join our team and redefine luxury service."
+            imageQuote={t('activate.image_quote', { defaultValue: 'Join our team and redefine luxury service.' })}
         >
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 {status.message && (

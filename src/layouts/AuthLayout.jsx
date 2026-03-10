@@ -15,7 +15,7 @@ const AuthLayout = ({ children, title, subtitle, imageUrl, imageQuote }) => {
             <div className="flex w-full lg:w-1/2 h-[30vh] lg:h-full relative bg-charcoal overflow-hidden group shrink-0">
                 <div
                     className="absolute inset-0 w-full h-full bg-cover bg-center transition-transform duration-700 ease-in-out group-hover:scale-105"
-                    style={{ backgroundImage: `url(${imageUrl || 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=1200'})` }}
+                    style={{ backgroundImage: `url(${imageUrl || '/login.jpeg'})` }}
                 />
                 <div className="absolute inset-0 bg-charcoal/40 mix-blend-multiply"></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-transparent to-transparent"></div>
