@@ -4,6 +4,7 @@ import { subscribeToRooms, updateRoomStatus } from '../../services/roomService';
 import { subscribeToStaffTasks, updateTaskStatus } from '../../services/taskService';
 import { subscribeToStaffIssues, reportIssue } from '../../services/issueService';
 import { useTranslation } from 'react-i18next';
+import { getUserDisplayName } from '../../utils/userHelpers';
 
 const StaffDashboard = () => {
     const { t } = useTranslation();
@@ -77,6 +78,7 @@ const StaffDashboard = () => {
     ], [rooms, tasks, issues]);
 
     const isVisible = (id) => visibleCards.includes(id);
+    const displayName = getUserDisplayName(user, 'Partner');
 
     const handleStartTask = async (taskId) => {
         try {
@@ -129,7 +131,7 @@ const StaffDashboard = () => {
             {/* Greeting */}
             <div className="space-y-1">
                 <h1 className="text-3xl font-display font-bold text-gray-900 dark:text-white tracking-tight">
-                    {t('staff_portal.hello')}, <span className="text-[#f4c025]">{user?.displayName || 'Partner'}</span>
+                    {t('staff_portal.hello')}, <span className="text-[#f4c025]">{displayName}</span>
                 </h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400">{t('staff_portal.shift_summary')}</p>
             </div>

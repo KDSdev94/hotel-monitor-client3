@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import NotificationDropdown from '../components/NotificationDropdown';
 import ProfileDropdown from '../components/ProfileDropdown';
+import { getUserDisplayName, getUserInitial } from '../utils/userHelpers';
 
 
 const StaffLayout = () => {
@@ -32,6 +33,8 @@ const StaffLayout = () => {
     }, []);
 
     const currentPage = menuItems.find(item => location.pathname.startsWith(item.path));
+    const displayName = getUserDisplayName(user, 'Staff Member');
+    const userInitial = getUserInitial(user, 'S');
 
     return (
         <div className="min-h-screen bg-[#f6f5f0] dark:bg-[#0e0e0e] transition-colors duration-500">
@@ -62,10 +65,10 @@ const StaffLayout = () => {
                     <div className="bg-white/5 rounded-xl p-3.5 border border-white/[0.04]">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#f4c025] to-[#d4a015] flex items-center justify-center text-black font-bold text-sm">
-                                {user?.displayName?.charAt(0) || user?.email?.charAt(0)?.toUpperCase() || 'S'}
+                                {userInitial}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-white text-[13px] font-bold truncate">{user?.fullName || user?.displayName || 'Staff Member'}</p>
+                                <p className="text-white text-[13px] font-bold truncate">{displayName}</p>
                                 <p className="text-gray-500 text-[10px] font-semibold truncate">{user?.email || 'staff@hotel.com'}</p>
                             </div>
                             <span className="w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-emerald-400/20 flex-shrink-0"></span>

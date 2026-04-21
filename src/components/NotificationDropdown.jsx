@@ -147,64 +147,64 @@ const NotificationDropdown = () => {
                         className="fixed inset-0 z-40"
                         onClick={() => setIsOpen(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-surface-dark border border-gray-100 dark:border-[#444] rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col animate-in fade-in slide-in-from-top-2 duration-200">
-                        <div className="px-4 py-3 border-b border-gray-100 dark:border-[#444] flex justify-between items-center bg-gray-50 dark:bg-surface-darker/50">
+                    <div className="fixed inset-x-3 top-[68px] z-50 max-h-[calc(100vh-88px)] overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl dark:border-[#444] dark:bg-surface-dark flex flex-col animate-in fade-in slide-in-from-top-2 duration-200 sm:absolute sm:inset-x-auto sm:top-auto sm:right-0 sm:mt-2 sm:w-[24rem] sm:max-h-none">
+                        <div className="px-4 py-3 border-b border-gray-100 dark:border-[#444] flex justify-between items-center gap-3 bg-gray-50 dark:bg-surface-darker/50">
                             <h3 className="text-sm font-bold text-gray-900 dark:text-white">{t('notifications.title')}</h3>
                             <button
                                 onClick={markAllRead}
-                                className="text-[11px] text-primary hover:underline font-extrabold uppercase tracking-widest"
+                                className="text-[10px] sm:text-[11px] text-primary hover:underline font-extrabold uppercase tracking-widest whitespace-nowrap"
                             >
                                 {t('notifications.mark_all_read')}
                             </button>
                         </div>
 
                         {showPushCta && (
-                            <div className="px-4 py-3 border-b border-gray-100 dark:border-[#333] bg-primary/5">
+                            <div className="px-4 py-4 border-b border-gray-100 dark:border-[#333] bg-primary/5">
                                 <p className="text-xs font-bold text-gray-900 dark:text-white">{pushTitle}</p>
-                                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
+                                <p className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400 mt-1.5">
                                     {pushDescription}
                                 </p>
                                 <button
                                     onClick={handleEnablePush}
                                     disabled={enablingPush || missingPushConfig}
-                                    className="mt-3 w-full px-3 py-2 rounded-lg bg-primary text-black text-[11px] font-black uppercase tracking-widest disabled:opacity-50"
+                                    className="mt-3 w-full px-3 py-3 rounded-xl bg-primary text-black text-[11px] font-black uppercase tracking-widest disabled:opacity-50"
                                 >
                                     {enablingPush ? 'Mengaktifkan...' : pushTitle}
                                 </button>
-                                <p className="text-[10px] text-gray-400 mt-2">
+                                <p className="text-[10px] text-gray-400 mt-2.5 leading-relaxed">
                                     Di iPhone, web push biasanya perlu dibuka sebagai Home Screen app.
                                 </p>
                                 {missingPushConfig && (
-                                    <p className="text-[10px] text-red-500 mt-2">
+                                    <p className="text-[10px] text-red-500 mt-2 leading-relaxed">
                                         VAPID key belum di-set di environment aplikasi.
                                     </p>
                                 )}
                             </div>
                         )}
 
-                        <div className="max-h-96 overflow-y-auto">
+                        <div className="overflow-y-auto max-h-[min(28rem,calc(100vh-220px))] sm:max-h-96">
                             {notifications.length > 0 ? (
                                 notifications.map((notification) => (
                                     <button
                                         key={notification.id}
                                         onClick={() => handleNotificationClick(notification)}
-                                        className={`w-full text-left px-4 py-3 border-b border-gray-50 dark:border-[#333] hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer ${notification.unread ? 'bg-primary/5' : ''}`}
+                                        className={`w-full text-left px-4 py-3.5 border-b border-gray-50 dark:border-[#333] hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer ${notification.unread ? 'bg-primary/5' : ''}`}
                                     >
                                         <div className="flex justify-between items-start mb-1 gap-3">
-                                            <h4 className={`text-sm font-bold ${notification.unread ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-300'}`}>
+                                            <h4 className={`text-sm font-bold leading-snug ${notification.unread ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-300'}`}>
                                                 {notification.title}
                                             </h4>
-                                            <span className="text-[10px] text-gray-400 dark:text-gray-500 font-extrabold uppercase whitespace-nowrap">
+                                            <span className="text-[10px] text-gray-400 dark:text-gray-500 font-extrabold uppercase whitespace-nowrap pt-0.5">
                                                 {notification.time ? formatDistanceToNow(notification.time, { addSuffix: true }) : 'Just now'}
                                             </span>
                                         </div>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2 font-medium">
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-3 font-medium pr-2">
                                             {notification.description}
                                         </p>
                                     </button>
                                 ))
                             ) : (
-                                <div className="py-12 flex flex-col items-center justify-center text-gray-400">
+                                <div className="py-14 px-6 flex flex-col items-center justify-center text-gray-400 text-center">
                                     <span className="material-symbols-outlined text-4xl mb-2 opacity-20">notifications_off</span>
                                     <p className="text-sm font-bold">{t('notifications.no_notifications')}</p>
                                 </div>
