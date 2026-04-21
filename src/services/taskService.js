@@ -7,9 +7,10 @@ import {
     where,
     onSnapshot,
     serverTimestamp,
-    getDocs
+    getDoc
 } from 'firebase/firestore';
 import { db } from './firebase';
+import { createAdminTaskStatusNotification } from './notificationService';
 
 // Subscribe ke task milik staff tertentu secara realtime
 export const subscribeToStaffTasks = (staffUid, callback) => {
@@ -57,10 +58,21 @@ export const createTask = async (taskData) => {
 // Update status task dan trigger auto-update room jika selesai
 export const updateTaskStatus = async (taskId, status, additionalData = {}) => {
     const taskRef = doc(db, 'tasks', taskId);
+    const taskSnapshot = await getDoc(taskRef);
+
+    if (!taskSnapshot.exists()) {
+        throw new Error('Task not found');
+    }
+
+    const existingTask = {
+        id: taskSnapshot.id,
+        ...taskSnapshot.data()
+    };
+    const { actor, ...taskUpdates } = additionalData;
     const updatePayload = {
         status,
         updatedAt: serverTimestamp(),
-        ...additionalData
+        ...taskUpdates
     };
 
     if (status === 'completed') {
@@ -71,6 +83,14 @@ export const updateTaskStatus = async (taskId, status, additionalData = {}) => {
     }
 
     await updateDoc(taskRef, updatePayload);
+
+    if (existingTask.status !== status) {
+        await createAdminTaskStatusNotification({
+            task: existingTask,
+            status,
+            actor
+        });
+    }
 
     // Jika task selesai, periksa apakah perlu update room status
     if (status === 'completed') {

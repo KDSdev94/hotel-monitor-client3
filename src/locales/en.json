@@ -45,7 +45,20 @@
         "loading": "Loading...",
         "back": "Back",
         "privacy": "Privacy",
-        "terms": "Terms"
+        "terms": "Terms",
+        "updated_successfully": "updated successfully.",
+        "added_successfully": "added successfully.",
+        "saving": "Saving...",
+        "adding": "Adding...",
+        "error_saving": "Failed to save data.",
+        "error_deleting": "Failed to delete data.",
+        "deleting": "Deleting...",
+        "deleted_successfully": "deleted successfully.",
+        "cancel": "Cancel",
+        "save": "Save",
+        "add": "Add",
+        "number": "Number",
+        "error": "An error occurred"
     },
     "login": {
         "welcome_subtitle": "Enter your account details to access the monitoring system.",
@@ -102,6 +115,10 @@
         "on_break": "On Break",
         "cleaning_avg": "Cleaning Avg",
         "add_staff": "Add Staff",
+        "edit_staff": "Edit Staff",
+        "staff": "Staff",
+        "error_name_required": "Full name is required.",
+        "assigned_to": "Assigned to",
         "registration": "Register a new team member",
         "all_staff": "All Staff",
         "housekeeping": "Housekeeping",
@@ -121,7 +138,11 @@
         "search_rooms": "Search by room number or type...",
         "all_floors": "All Floors",
         "all_statuses": "All Statuses",
-        "reset_filters": "Reset Filters"
+        "reset_filters": "Reset Filters",
+        "room": "Room",
+        "edit_room": "Edit Room",
+        "assign_staff": "Assign Staff",
+        "assign_staff_desc": "This staff member will be responsible for cleaning/maintaining this room."
     },
     "reports": {
         "weekly_analysis": "Weekly Analysis",

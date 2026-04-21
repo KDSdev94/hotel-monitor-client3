@@ -17,11 +17,12 @@ const AuthLayout = ({ children, title, subtitle, imageUrl, imageQuote }) => {
                     className="absolute inset-0 w-full h-full bg-cover bg-center transition-transform duration-700 ease-in-out group-hover:scale-105"
                     style={{ backgroundImage: `url(${imageUrl || '/login.jpeg'})` }}
                 />
-                <div className="absolute inset-0 bg-charcoal/40 mix-blend-multiply"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-transparent to-transparent"></div>
+                <div className="absolute inset-0 bg-black/40"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
 
                 <div className="relative z-10 flex flex-col justify-between p-8 lg:p-12 w-full h-full text-[#fcfbf8]">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 drop-shadow-md">
                         <span
                             className="material-symbols-outlined text-primary text-3xl lg:text-4xl"
                             style={{ fontVariationSettings: "'FILL' 1, 'wght' 700, 'GRAD' 200, 'opsz' 48" }}
@@ -31,11 +32,11 @@ const AuthLayout = ({ children, title, subtitle, imageUrl, imageQuote }) => {
                         <span className="text-lg lg:text-xl font-bold tracking-widest uppercase">Hotel Room Monitor</span>
                     </div>
                     <div className="max-w-md hidden lg:block">
-                        <h2 className="text-3xl lg:text-5xl font-medium leading-tight mb-6 text-white">
+                        <h2 className="text-4xl lg:text-6xl font-display font-medium leading-tight mb-6 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] italic">
                             {imageQuote || 'Experience the Art of Hospitality'}
                         </h2>
                     </div>
-                    <div className="hidden lg:flex items-center gap-4 text-sm font-medium tracking-wide text-white/60">
+                    <div className="hidden lg:flex items-center gap-4 text-sm font-medium tracking-wide text-white/70 drop-shadow-sm">
                         <span>© {new Date().getFullYear()} Hotel Room Monitor.</span>
                         <span className="w-1 h-1 rounded-full bg-primary"></span>
                         <a className="hover:text-primary transition-colors" href="#">{t('common.privacy', { defaultValue: 'Privacy' })}</a>

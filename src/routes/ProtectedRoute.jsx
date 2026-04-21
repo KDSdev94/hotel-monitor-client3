@@ -2,6 +2,9 @@ import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+export const ADMIN_ROLES = ['admin', 'Admin', 'Front Office', 'FO', 'Receptionist', 'Management'];
+export const STAFF_ROLES = ['staff', 'Housekeeping', 'Maintenance'];
+
 export const ProtectedRoute = () => {
     const { user, loading } = useAuth();
     const location = useLocation();
@@ -27,11 +30,12 @@ export const RoleRoute = ({ allowedRoles }) => {
     if (loading) return null;
 
     // Jika user ada tapi role tidak sesuai dengan allowedRoles
-    const isStaff = ['staff', 'Housekeeping', 'Receptionist', 'Maintenance'].includes(role);
+    const isStaff = STAFF_ROLES.includes(role);
+    const isAdmin = ADMIN_ROLES.includes(role);
     const isAllowed = allowedRoles.includes(role);
 
     if (user && !isAllowed) {
-        if (role === 'admin') {
+        if (isAdmin) {
             return <Navigate to="/dashboard" replace />;
         }
         if (isStaff) {

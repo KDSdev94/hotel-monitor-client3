@@ -3,9 +3,17 @@ import { useTranslation } from 'react-i18next';
 import Modal from './Modal';
 import { addRoom, updateRoom } from '../services/roomService';
 import { createTask } from '../services/taskService';
+import {
+    createAdminAssignmentNotification,
+    createStaffAssignmentNotification
+} from '../services/notificationService';
+import { getTaskTypeFromRoomStatus, getTaskTypeLabel } from '../utils/taskHelpers';
+import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-hot-toast';
 
 const RoomModal = ({ isOpen, onClose, room, roomTypes = [], staffList = [] }) => {
     const { t } = useTranslation();
+    const { user, role } = useAuth();
     const defaultType = roomTypes.length > 0 ? roomTypes[0].name : 'Standard';
 
     const [formData, setFormData] = useState({
@@ -41,39 +49,97 @@ const RoomModal = ({ isOpen, onClose, room, roomTypes = [], staffList = [] }) =>
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const loadingToast = toast.loading(room ? t('common.saving', { defaultValue: 'Saving...' }) : t('common.adding', { defaultValue: 'Adding...' }));
         try {
+            const senderName = user?.displayName || user?.fullName || user?.email || 'Admin';
+            const assignedStaff = formData.staff
+                ? {
+                    id: formData.staff.id,
+                    uid: formData.staff.uid || null,
+                    name: formData.staff.name || formData.staff.fullName || '',
+                    role: formData.staff.role || 'staff',
+                    avatar: formData.staff.avatar || '',
+                    phone: formData.staff.phone || ''
+                }
+                : null;
+            const taskType = getTaskTypeFromRoomStatus(formData.status);
             let roomId = room?.id;
             const isNewRoom = !roomId;
+            const roomPayload = {
+                ...formData,
+                staff: assignedStaff,
+                assignedStaffId: assignedStaff?.uid || null
+            };
 
             if (roomId) {
-                await updateRoom(roomId, formData);
+                await updateRoom(roomId, roomPayload);
+                toast.success(`${t('rooms.room', { defaultValue: 'Room' })} ${formData.number} ${t('common.updated_successfully', { defaultValue: 'updated successfully.' })}`, { id: loadingToast });
             } else {
-                const docRef = await addRoom(formData);
+                const docRef = await addRoom(roomPayload);
                 roomId = docRef.id;
+                toast.success(`${t('rooms.room', { defaultValue: 'Room' })} ${formData.number} ${t('common.added_successfully', { defaultValue: 'added successfully.' })}`, { id: loadingToast });
             }
 
             // AUTO-TASK GENERATION LOGIC (Plan step 2)
             // If staff is assigned and status is pending_inspection (or any status that needs action)
-            if (formData.staff && formData.staff.uid) {
+            if (assignedStaff) {
                 // Check if staff changed or it's a new assignment
-                const isStaffChanged = isNewRoom || (room.staff?.id !== formData.staff.id);
+                const isStaffChanged = isNewRoom || (room?.staff?.id !== assignedStaff.id);
 
                 if (isStaffChanged) {
-                    await createTask({
+                    const taskId = await createTask({
                         roomId: roomId,
                         roomNumber: formData.number,
-                        assignedStaffId: formData.staff.uid,
-                        type: 'inspection',
+                        staffId: assignedStaff.id,
+                        assignedStaffId: assignedStaff.uid || assignedStaff.id,
+                        recipientUid: assignedStaff.uid || null,
+                        staffName: assignedStaff.name,
+                        assignedByUid: user?.uid || null,
+                        assignedByName: senderName,
+                        type: taskType,
                         status: 'pending',
-                        note: 'Initial inspection assigned by admin'
+                        note: `${getTaskTypeLabel(taskType)} ditugaskan oleh ${senderName}.`
                     });
+
+                    await createStaffAssignmentNotification({
+                        recipientUid: assignedStaff.uid || null,
+                        recipientStaffId: assignedStaff.id,
+                        roomId,
+                        roomNumber: formData.number,
+                        taskId,
+                        taskType,
+                        sender: {
+                            uid: user?.uid || null,
+                            name: senderName,
+                            role: role || 'admin'
+                        }
+                    });
+
+                    await createAdminAssignmentNotification({
+                        roomId,
+                        roomNumber: formData.number,
+                        taskId,
+                        taskType,
+                        assignedStaff,
+                        sender: {
+                            uid: user?.uid || null,
+                            name: senderName,
+                            role: role || 'admin'
+                        }
+                    });
+
+                    toast.success(`${t('staff.assigned_to', { defaultValue: 'Assigned to' })} ${assignedStaff.name}`);
+
+                    if (!assignedStaff.uid) {
+                        toast.error('Staff belum punya akun aktif, jadi notifikasi personal belum bisa dikirim.');
+                    }
                 }
             }
 
             onClose();
         } catch (error) {
             console.error("Failed to save room:", error);
-            alert(t('common.error', { defaultValue: 'Error saving data. Please try again.' }));
+            toast.error(t('common.error_saving', { defaultValue: 'Failed to save data.' }), { id: loadingToast });
         }
     };
 

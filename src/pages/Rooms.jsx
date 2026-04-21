@@ -5,6 +5,7 @@ import RoomModal from '../components/RoomModal';
 import { subscribeToRooms } from '../services/roomService';
 import { subscribeToRoomTypes, addRoomType, deleteRoomType, initializeDefaultRoomTypes } from '../services/roomTypeService';
 import { subscribeToStaff } from '../services/staffService';
+import { toast } from 'react-hot-toast';
 
 const Rooms = () => {
     const { t } = useTranslation();
@@ -45,21 +46,29 @@ const Rooms = () => {
 
     const handleAddType = async (e) => {
         e.preventDefault();
-        if (!newTypeName.trim()) return;
+        const typeName = newTypeName.trim();
+        if (!typeName) return;
+        const loadingToast = toast.loading(t('common.adding', { defaultValue: 'Adding...' }));
         try {
-            await addRoomType(newTypeName.trim());
+            await addRoomType(typeName);
             setNewTypeName('');
+            toast.success(`${t('rooms.type', { defaultValue: 'Room Type' })} "${typeName}" ${t('common.added_successfully', { defaultValue: 'added successfully.' })}`, { id: loadingToast });
         } catch (error) {
             console.error(error);
+            toast.error(t('common.error_saving', { defaultValue: 'Failed to save data.' }), { id: loadingToast });
         }
     };
 
     const handleDeleteType = async (typeId) => {
+        const typeToDelete = roomTypes.find(t => t.id === typeId);
         if (window.confirm(t('rooms.confirm_delete_type', { defaultValue: 'Delete this room type? Rooms using this type will not change but the category will disappear.' }))) {
+            const loadingToast = toast.loading(t('common.deleting', { defaultValue: 'Deleting...' }));
             try {
                 await deleteRoomType(typeId);
+                toast.success(`${t('rooms.type', { defaultValue: 'Room Type' })} "${typeToDelete?.name}" ${t('common.deleted_successfully', { defaultValue: 'deleted successfully.' })}`, { id: loadingToast });
             } catch (error) {
                 console.error(error);
+                toast.error(t('common.error_deleting', { defaultValue: 'Failed to delete.' }), { id: loadingToast });
             }
         }
     };

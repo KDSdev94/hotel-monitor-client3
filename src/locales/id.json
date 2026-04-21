@@ -45,7 +45,20 @@
         "loading": "Memuat...",
         "back": "Kembali",
         "privacy": "Privasi",
-        "terms": "Ketentuan"
+        "terms": "Ketentuan",
+        "updated_successfully": "berhasil diperbarui.",
+        "added_successfully": "berhasil ditambahkan.",
+        "saving": "Menyimpan...",
+        "adding": "Menambah...",
+        "error_saving": "Gagal menyimpan data.",
+        "error_deleting": "Gagal menghapus data.",
+        "deleting": "Menghapus...",
+        "deleted_successfully": "berhasil dihapus.",
+        "cancel": "Batal",
+        "save": "Simpan",
+        "add": "Tambah",
+        "number": "Nomor",
+        "error": "Terjadi kesalahan"
     },
     "login": {
         "welcome_subtitle": "Masukkan detail akun Anda untuk masuk ke sistem monitoring.",
@@ -102,6 +115,11 @@
         "on_break": "Sedang Istirahat",
         "cleaning_avg": "Rerata Pembersihan",
         "add_staff": "Tambah Staf",
+        "edit_staff": "Edit Staf",
+        "staff": "Staf",
+        "role": "Peran",
+        "error_name_required": "Nama lengkap wajib diisi.",
+        "assigned_to": "Ditugaskan ke",
         "registration": "Daftarkan anggota tim baru",
         "all_staff": "Semua Staf",
         "housekeeping": "Housekeeping",
@@ -121,7 +139,12 @@
         "search_rooms": "Cari berdasarkan nomor kamar atau tipe...",
         "all_floors": "Semua Lantai",
         "all_statuses": "Semua Status",
-        "reset_filters": "Atur Ulang Filter"
+        "reset_filters": "Atur Ulang Filter",
+        "room": "Kamar",
+        "type": "Tipe Kamar",
+        "edit_room": "Edit Kamar",
+        "assign_staff": "Tugaskan Staf",
+        "assign_staff_desc": "Staf ini akan bertanggung jawab untuk membersihkan/merawat kamar ini."
     },
     "reports": {
         "weekly_analysis": "Analisis Mingguan",

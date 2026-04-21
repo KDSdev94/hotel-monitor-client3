@@ -2,8 +2,16 @@ import { useState, useMemo } from 'react';
 import Modal from './Modal';
 import { updateRoom } from '../services/roomService';
 import { createTask } from '../services/taskService';
+import {
+    createAdminAssignmentNotification,
+    createStaffAssignmentNotification
+} from '../services/notificationService';
+import { getTaskTypeLabel } from '../utils/taskHelpers';
+import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-hot-toast';
 
 const AssignStaffModal = ({ isOpen, onClose, room, staffList = [] }) => {
+    const { user, role } = useAuth();
     const [selectedStaffId, setSelectedStaffId] = useState(room?.staff?.id || '');
     const [search, setSearch] = useState('');
     const [saving, setSaving] = useState(false);
@@ -40,28 +48,73 @@ const AssignStaffModal = ({ isOpen, onClose, room, staffList = [] }) => {
         if (!room?.id) return;
         setSaving(true);
         try {
+            const taskType = 'inspection';
+            const senderName = user?.displayName || user?.fullName || user?.email || 'Admin';
             const staffToAssign = selectedStaffId
                 ? staffList.find(s => s.id === selectedStaffId) || null
                 : null;
+            const assignedStaffUid = staffToAssign?.uid || null;
 
             await updateRoom(room.id, {
                 staff: staffToAssign
-                    ? { id: staffToAssign.id, name: staffToAssign.name, role: staffToAssign.role, avatar: staffToAssign.avatar || '' }
+                    ? {
+                        id: staffToAssign.id,
+                        uid: assignedStaffUid,
+                        name: staffToAssign.name,
+                        role: staffToAssign.role,
+                        avatar: staffToAssign.avatar || '',
+                        phone: staffToAssign.phone || ''
+                    }
                     : null,
+                assignedStaffId: assignedStaffUid,
             });
 
             // Buat task jika ada staff baru yang di-assign
             if (staffToAssign && staffToAssign.id !== currentStaffId) {
-                await createTask({
+                const taskId = await createTask({
                     roomId: room.id,
                     roomNumber: room.number,
                     staffId: staffToAssign.id,
-                    assignedStaffId: staffToAssign.uid || staffToAssign.id, // Gunakan UID jika akun sudah aktif
+                    assignedStaffId: assignedStaffUid || staffToAssign.id,
+                    recipientUid: assignedStaffUid,
                     staffName: staffToAssign.name,
-                    type: 'inspection',
+                    assignedByUid: user?.uid || null,
+                    assignedByName: senderName,
+                    type: taskType,
                     status: 'pending',
-                    createdAt: new Date().toISOString(),
+                    note: `${getTaskTypeLabel(taskType)} ditugaskan oleh ${senderName}.`
                 });
+
+                await createStaffAssignmentNotification({
+                    recipientUid: assignedStaffUid,
+                    recipientStaffId: staffToAssign.id,
+                    roomId: room.id,
+                    roomNumber: room.number,
+                    taskId,
+                    taskType,
+                    sender: {
+                        uid: user?.uid || null,
+                        name: senderName,
+                        role: role || 'admin'
+                    }
+                });
+
+                await createAdminAssignmentNotification({
+                    roomId: room.id,
+                    roomNumber: room.number,
+                    taskId,
+                    taskType,
+                    assignedStaff: staffToAssign,
+                    sender: {
+                        uid: user?.uid || null,
+                        name: senderName,
+                        role: role || 'admin'
+                    }
+                });
+
+                if (!assignedStaffUid) {
+                    toast.error('Staff belum punya akun aktif, jadi notifikasi personal belum bisa dikirim.');
+                }
             }
 
             onClose();
@@ -256,7 +309,7 @@ const AssignStaffModal = ({ isOpen, onClose, room, staffList = [] }) => {
                     <span className="material-symbols-outlined text-primary text-[18px]">info</span>
                     <p className="text-xs text-gray-600 dark:text-gray-300">
                         <span className="font-bold text-primary">{selectedStaff?.name}</span> akan di-assign ke kamar{' '}
-                        <span className="font-bold">{room.number}</span> dan task inspeksi akan dibuat otomatis.
+                        <span className="font-bold">{room.number}</span> dan task {getTaskTypeLabel('inspection')} akan dibuat otomatis.
                     </p>
                 </div>
             )}

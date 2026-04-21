@@ -15,14 +15,14 @@ import StaffRooms from '../pages/staff/StaffRooms';
 import StaffTasks from '../pages/staff/StaffTasks';
 import StaffIssues from '../pages/staff/StaffIssues';
 import StaffProfile from '../pages/staff/StaffProfile';
-import { ProtectedRoute, RoleRoute } from './ProtectedRoute';
+import { ProtectedRoute, RoleRoute, ADMIN_ROLES, STAFF_ROLES } from './ProtectedRoute';
 import { useAuth } from '../context/AuthContext';
 
 // Komponen penengah untuk redirect path root (/)
 const HomeRedirect = () => {
     const { role, loading } = useAuth();
     if (loading) return null;
-    return role === 'admin' ? <Navigate to="/dashboard" replace /> : <Navigate to="/staff/dashboard" replace />;
+    return ADMIN_ROLES.includes(role) ? <Navigate to="/dashboard" replace /> : <Navigate to="/staff/dashboard" replace />;
 };
 
 const AppRoutes = () => {
@@ -40,7 +40,7 @@ const AppRoutes = () => {
                     <Route path="/" element={<HomeRedirect />} />
 
                     {/* Admin Routes with MainLayout */}
-                    <Route element={<RoleRoute allowedRoles={['admin']} />}>
+                    <Route element={<RoleRoute allowedRoles={ADMIN_ROLES} />}>
                         <Route element={<MainLayout />}>
                             <Route path="dashboard" element={<Dashboard />} />
                             <Route path="rooms" element={<Rooms />} />
@@ -52,7 +52,7 @@ const AppRoutes = () => {
                     </Route>
 
                     {/* Staff Routes with StaffLayout */}
-                    <Route element={<RoleRoute allowedRoles={['staff', 'Housekeeping', 'Receptionist', 'Maintenance']} />}>
+                    <Route element={<RoleRoute allowedRoles={STAFF_ROLES} />}>
                         <Route path="staff" element={<StaffLayout />}>
                             <Route index element={<Navigate to="dashboard" replace />} />
                             <Route path="dashboard" element={<StaffDashboard />} />

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from './Modal';
 import { addStaff, updateStaff } from '../services/staffService';
+import { toast } from 'react-hot-toast';
 
 const StaffModal = ({ isOpen, onClose, staff, roles = [] }) => {
     const { t } = useTranslation();
@@ -58,16 +59,24 @@ const StaffModal = ({ isOpen, onClose, staff, roles = [] }) => {
 
         // Basic validation
         if (!formData.name) {
-            alert('Nama wajib diisi.');
+            toast.error(t('staff.error_name_required', { defaultValue: 'Full name is required.' }));
             return;
         }
 
-        if (staff?.id) {
-            await updateStaff(staff.id, formData);
-        } else {
-            await addStaff(formData);
+        const loadingToast = toast.loading(staff ? t('common.saving', { defaultValue: 'Saving...' }) : t('common.adding', { defaultValue: 'Adding...' }));
+        try {
+            if (staff?.id) {
+                await updateStaff(staff.id, formData);
+                toast.success(`${t('staff.staff', { defaultValue: 'Staff' })} ${formData.name} ${t('common.updated_successfully', { defaultValue: 'updated successfully.' })}`, { id: loadingToast });
+            } else {
+                await addStaff(formData);
+                toast.success(`${t('staff.staff', { defaultValue: 'Staff' })} ${formData.name} ${t('common.added_successfully', { defaultValue: 'added successfully.' })}`, { id: loadingToast });
+            }
+            onClose();
+        } catch (error) {
+            console.error("Failed to save staff:", error);
+            toast.error(t('common.error_saving', { defaultValue: 'Failed to save data.' }), { id: loadingToast });
         }
-        onClose();
     };
 
     const footer = (

@@ -13,7 +13,7 @@ const priorityConfig = {
 
 const StaffTasks = () => {
     const { t } = useTranslation();
-    const { user } = useAuth();
+    const { user, role } = useAuth();
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('all');
@@ -50,7 +50,13 @@ const StaffTasks = () => {
 
     const handleUpdateStatus = async (task, newStatus) => {
         try {
-            await updateTaskStatus(task.id, newStatus);
+            await updateTaskStatus(task.id, newStatus, {
+                actor: {
+                    uid: user?.uid || null,
+                    name: user?.displayName || user?.fullName || user?.email || 'Staff',
+                    role: role || 'staff'
+                }
+            });
 
             // Auto-update room status if completed
             if (newStatus === 'completed') {

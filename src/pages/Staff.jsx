@@ -4,6 +4,7 @@ import StaffCard from '../components/StaffCard';
 import StaffModal from '../components/StaffModal';
 import { subscribeToStaff } from '../services/staffService';
 import { subscribeToRoles, addRole, deleteRole, initializeDefaultRoles } from '../services/roleService';
+import { toast } from 'react-hot-toast';
 
 const Staff = () => {
     const { t } = useTranslation();
@@ -37,21 +38,29 @@ const Staff = () => {
 
     const handleAddRole = async (e) => {
         e.preventDefault();
-        if (!newRoleName.trim()) return;
+        const roleName = newRoleName.trim();
+        if (!roleName) return;
+        const loadingToast = toast.loading(t('common.adding', { defaultValue: 'Adding...' }));
         try {
-            await addRole(newRoleName.trim());
+            await addRole(roleName);
             setNewRoleName('');
+            toast.success(`${t('staff.role', { defaultValue: 'Role' })} "${roleName}" ${t('common.added_successfully', { defaultValue: 'added successfully.' })}`, { id: loadingToast });
         } catch (error) {
             console.error(error);
+            toast.error(t('common.error_saving', { defaultValue: 'Failed to save data.' }), { id: loadingToast });
         }
     };
 
     const handleDeleteRole = async (roleId) => {
+        const roleToDelete = roles.find(r => r.id === roleId);
         if (window.confirm(t('staff.confirm_delete_role', { defaultValue: 'Delete this role? Staff members with this role might need to be updated manually.' }))) {
+            const loadingToast = toast.loading(t('common.deleting', { defaultValue: 'Deleting...' }));
             try {
                 await deleteRole(roleId);
+                toast.success(`${t('staff.role', { defaultValue: 'Role' })} "${roleToDelete?.name}" ${t('common.deleted_successfully', { defaultValue: 'deleted successfully.' })}`, { id: loadingToast });
             } catch (error) {
                 console.error(error);
+                toast.error(t('common.error_deleting', { defaultValue: 'Failed to delete data.' }), { id: loadingToast });
             }
         }
     };

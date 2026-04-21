@@ -1,26 +1,131 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { subscribeToNotifications } from '../services/notificationService';
 import { formatDistanceToNow } from 'date-fns';
+import { toast } from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
+import {
+    isAdminRole,
+    markNotificationAsRead,
+    markNotificationsAsRead,
+    subscribeToNotifications
+} from '../services/notificationService';
+import {
+    enablePushNotifications,
+    getPushNotificationState
+} from '../services/pushNotificationService';
 
 const NotificationDropdown = () => {
     const { t } = useTranslation();
+    const { user, role } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
+    const [pushState, setPushState] = useState({
+        supported: false,
+        permission: 'default',
+        hasVapidKey: false
+    });
+    const [enablingPush, setEnablingPush] = useState(false);
 
     useEffect(() => {
-        const unsubscribe = subscribeToNotifications((data) => {
+        if (!user) return () => { };
+
+        const unsubscribe = subscribeToNotifications(user, role, (data) => {
             setNotifications(data);
         });
+
         return () => unsubscribe();
+    }, [user, role]);
+
+    useEffect(() => {
+        let mounted = true;
+
+        const loadPushState = async () => {
+            const state = await getPushNotificationState();
+            if (mounted) {
+                setPushState(state);
+            }
+        };
+
+        loadPushState();
+
+        return () => {
+            mounted = false;
+        };
     }, []);
 
-    const unreadCount = notifications.filter(n => n.unread).length;
+    const unreadCount = notifications.filter((notification) => notification.unread).length;
+    const adminView = isAdminRole(role);
 
-    const markAllRead = () => {
-        // In this implementation, we just clear the local unread state
-        setNotifications(notifications.map(n => ({ ...n, unread: false })));
+    const refreshPushState = async () => {
+        const state = await getPushNotificationState();
+        setPushState(state);
     };
+
+    const handleEnablePush = async () => {
+        if (!user?.uid) return;
+
+        setEnablingPush(true);
+        try {
+            const result = await enablePushNotifications(user);
+
+            if (result.ok) {
+                toast.success('Notifikasi perangkat berhasil diaktifkan.');
+            } else if (result.reason === 'missing-vapid-key') {
+                toast.error('VAPID key belum diisi, jadi push notification belum bisa aktif.');
+            } else if (result.reason === 'permission-denied') {
+                toast.error('Izin notifikasi ditolak di browser/perangkat.');
+            } else {
+                toast.error('Perangkat ini belum mendukung web push untuk aplikasi ini.');
+            }
+        } catch (error) {
+            console.error('Enable push notification failed:', error);
+            toast.error('Gagal mengaktifkan notifikasi perangkat.');
+        } finally {
+            setEnablingPush(false);
+            await refreshPushState();
+        }
+    };
+
+    const markAllRead = async () => {
+        try {
+            await markNotificationsAsRead(notifications, user?.uid);
+            setNotifications((currentNotifications) =>
+                currentNotifications.map((notification) => ({ ...notification, unread: false }))
+            );
+        } catch (error) {
+            console.error('Mark all notifications as read failed:', error);
+        }
+    };
+
+    const handleNotificationClick = async (notification) => {
+        if (notification.source === 'notification' && notification.unread) {
+            try {
+                await markNotificationAsRead(notification.docId, user?.uid);
+            } catch (error) {
+                console.error('Mark notification as read failed:', error);
+            }
+        }
+
+        setNotifications((currentNotifications) =>
+            currentNotifications.map((item) =>
+                item.id === notification.id ? { ...item, unread: false } : item
+            )
+        );
+
+        setIsOpen(false);
+
+        if (notification.actionUrl) {
+            window.location.assign(notification.actionUrl);
+        }
+    };
+
+    const showPushCta = pushState.supported && pushState.permission !== 'granted';
+    const missingPushConfig = pushState.supported && !pushState.hasVapidKey;
+    const feedLabel = adminView ? 'Aktivitas admin' : 'Aktivitas personal staff';
+    const pushTitle = adminView ? 'Aktifkan notifikasi admin' : 'Aktifkan notifikasi HP';
+    const pushDescription = adminView
+        ? 'Agar update operasional tampil di browser/perangkat admin ini, izinkan notifikasi perangkat.'
+        : 'Agar notif bisa muncul di sistem UI/lock screen, izinkan notifikasi perangkat untuk akun ini.';
 
     return (
         <div className="relative">
@@ -53,21 +158,50 @@ const NotificationDropdown = () => {
                             </button>
                         </div>
 
+                        {showPushCta && (
+                            <div className="px-4 py-3 border-b border-gray-100 dark:border-[#333] bg-primary/5">
+                                <p className="text-xs font-bold text-gray-900 dark:text-white">{pushTitle}</p>
+                                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
+                                    {pushDescription}
+                                </p>
+                                <button
+                                    onClick={handleEnablePush}
+                                    disabled={enablingPush || missingPushConfig}
+                                    className="mt-3 w-full px-3 py-2 rounded-lg bg-primary text-black text-[11px] font-black uppercase tracking-widest disabled:opacity-50"
+                                >
+                                    {enablingPush ? 'Mengaktifkan...' : pushTitle}
+                                </button>
+                                <p className="text-[10px] text-gray-400 mt-2">
+                                    Di iPhone, web push biasanya perlu dibuka sebagai Home Screen app.
+                                </p>
+                                {missingPushConfig && (
+                                    <p className="text-[10px] text-red-500 mt-2">
+                                        VAPID key belum di-set di environment aplikasi.
+                                    </p>
+                                )}
+                            </div>
+                        )}
+
                         <div className="max-h-96 overflow-y-auto">
                             {notifications.length > 0 ? (
-                                notifications.map((n) => (
-                                    <div
-                                        key={n.id}
-                                        className={`px-4 py-3 border-b border-gray-50 dark:border-[#333] hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer ${n.unread ? 'bg-primary/5' : ''}`}
+                                notifications.map((notification) => (
+                                    <button
+                                        key={notification.id}
+                                        onClick={() => handleNotificationClick(notification)}
+                                        className={`w-full text-left px-4 py-3 border-b border-gray-50 dark:border-[#333] hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer ${notification.unread ? 'bg-primary/5' : ''}`}
                                     >
-                                        <div className="flex justify-between items-start mb-1">
-                                            <h4 className={`text-sm font-bold ${n.unread ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-300'}`}>{n.title}</h4>
-                                            <span className="text-[10px] text-gray-400 dark:text-gray-500 font-extrabold uppercase">
-                                                {n.time ? formatDistanceToNow(n.time, { addSuffix: true }) : 'Just now'}
+                                        <div className="flex justify-between items-start mb-1 gap-3">
+                                            <h4 className={`text-sm font-bold ${notification.unread ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-300'}`}>
+                                                {notification.title}
+                                            </h4>
+                                            <span className="text-[10px] text-gray-400 dark:text-gray-500 font-extrabold uppercase whitespace-nowrap">
+                                                {notification.time ? formatDistanceToNow(notification.time, { addSuffix: true }) : 'Just now'}
                                             </span>
                                         </div>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2 font-medium">{n.description}</p>
-                                    </div>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2 font-medium">
+                                            {notification.description}
+                                        </p>
+                                    </button>
                                 ))
                             ) : (
                                 <div className="py-12 flex flex-col items-center justify-center text-gray-400">
@@ -79,7 +213,7 @@ const NotificationDropdown = () => {
 
                         <div className="px-4 py-3 bg-gray-50 dark:bg-surface-darker/50 border-t border-gray-100 dark:border-[#444] text-center">
                             <button className="text-[10px] text-gray-500 dark:text-gray-400 hover:text-primary transition-colors font-extrabold uppercase tracking-widest">
-                                View all activity
+                                {feedLabel}
                             </button>
                         </div>
                     </div>

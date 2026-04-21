@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "housekeeping-sytem",
+    "hksistem": "housekeeping-sytem"
+  },
+  "targets": {},
+  "etags": {}
+}

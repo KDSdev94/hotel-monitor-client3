@@ -1,0 +1,22 @@
+{
+  "name": "Hotel Room Monitor",
+  "short_name": "Hotel Monitor",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f5f0",
+  "theme_color": "#f4c025",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/login.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}

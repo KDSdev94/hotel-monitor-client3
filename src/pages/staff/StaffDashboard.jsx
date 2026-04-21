@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 const StaffDashboard = () => {
     const { t } = useTranslation();
-    const { user } = useAuth();
+    const { user, role } = useAuth();
     const [rooms, setRooms] = useState([]);
     const [tasks, setTasks] = useState([]);
     const [issues, setIssues] = useState([]);
@@ -80,7 +80,13 @@ const StaffDashboard = () => {
 
     const handleStartTask = async (taskId) => {
         try {
-            await updateTaskStatus(taskId, 'in_progress');
+            await updateTaskStatus(taskId, 'in_progress', {
+                actor: {
+                    uid: user?.uid || null,
+                    name: user?.displayName || user?.fullName || user?.email || 'Staff',
+                    role: role || 'staff'
+                }
+            });
         } catch (error) {
             console.error("Error starting task:", error);
         }
@@ -89,7 +95,13 @@ const StaffDashboard = () => {
     const handleCompleteTask = async (task) => {
         if (!window.confirm('Mark this task as completed?')) return;
         try {
-            await updateTaskStatus(task.id, 'completed');
+            await updateTaskStatus(task.id, 'completed', {
+                actor: {
+                    uid: user?.uid || null,
+                    name: user?.displayName || user?.fullName || user?.email || 'Staff',
+                    role: role || 'staff'
+                }
+            });
 
             // Auto-update room status based on task type
             if (task.type === 'inspection') {
