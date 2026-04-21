@@ -5,6 +5,10 @@ import { useAuth } from '../context/AuthContext';
 export const ADMIN_ROLES = ['admin', 'Admin', 'Front Office', 'FO', 'Receptionist', 'Management'];
 export const STAFF_ROLES = ['staff', 'Housekeeping', 'Maintenance'];
 
+const getDefaultRouteForRole = (role) => {
+    return ADMIN_ROLES.includes(role) ? '/dashboard' : '/staff/dashboard';
+};
+
 export const ProtectedRoute = () => {
     const { user, loading } = useAuth();
     const location = useLocation();
@@ -19,6 +23,18 @@ export const ProtectedRoute = () => {
 
     if (!user) {
         return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+
+    return <Outlet />;
+};
+
+export const PublicOnlyRoute = () => {
+    const { user, role, loading } = useAuth();
+
+    if (loading) return null;
+
+    if (user) {
+        return <Navigate to={getDefaultRouteForRole(role)} replace />;
     }
 
     return <Outlet />;

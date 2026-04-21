@@ -15,7 +15,7 @@ import StaffRooms from '../pages/staff/StaffRooms';
 import StaffTasks from '../pages/staff/StaffTasks';
 import StaffIssues from '../pages/staff/StaffIssues';
 import StaffProfile from '../pages/staff/StaffProfile';
-import { ProtectedRoute, RoleRoute, ADMIN_ROLES, STAFF_ROLES } from './ProtectedRoute';
+import { ProtectedRoute, PublicOnlyRoute, RoleRoute, ADMIN_ROLES, STAFF_ROLES } from './ProtectedRoute';
 import { useAuth } from '../context/AuthContext';
 
 // Komponen penengah untuk redirect path root (/)
@@ -30,9 +30,11 @@ const AppRoutes = () => {
         <BrowserRouter>
             <Routes>
                 {/* Public Auth Routes */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/activate" element={<ActivateAccount />} />
+                <Route element={<PublicOnlyRoute />}>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/activate" element={<ActivateAccount />} />
+                </Route>
 
                 {/* Protected Routes */}
                 <Route element={<ProtectedRoute />}>

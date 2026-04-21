@@ -208,22 +208,23 @@ export const subscribeToNotifications = (user, role, callback) => {
         callback(combined);
     };
 
-    const notificationQuery = admin
-        ? query(
-            collection(db, 'notifications'),
-            where('audience', '==', 'admins'),
-            orderBy('createdAt', 'desc'),
-            limit(20)
-        )
-        : query(
-            collection(db, 'notifications'),
-            where('recipientUid', '==', userUid),
-            orderBy('createdAt', 'desc'),
-            limit(20)
-        );
+    const notificationQuery = query(
+        collection(db, 'notifications'),
+        orderBy('createdAt', 'desc'),
+        limit(100)
+    );
 
     unsubscribers.push(onSnapshot(notificationQuery, (snapshot) => {
-        notificationEntries = snapshot.docs.map((docSnap) => mapNotificationDoc(docSnap, userUid));
+        notificationEntries = snapshot.docs
+            .filter((docSnap) => {
+                const data = docSnap.data();
+                if (admin) {
+                    return data.audience === 'admins';
+                }
+
+                return data.recipientUid === userUid;
+            })
+            .map((docSnap) => mapNotificationDoc(docSnap, userUid));
         emit();
     }, (error) => {
         console.error('Notif Error (Notifications):', error);
