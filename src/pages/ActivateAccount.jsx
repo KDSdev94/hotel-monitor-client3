@@ -34,6 +34,16 @@ const ActivateAccount = () => {
         fetchInactiveStaff();
     }, []);
 
+    useEffect(() => {
+        if (!selectedStaff) {
+            setEmail('');
+            return;
+        }
+
+        const selectedStaffData = staffList.find((staff) => staff.id === selectedStaff);
+        setEmail(selectedStaffData?.email || '');
+    }, [selectedStaff, staffList]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!selectedStaff) {
@@ -109,6 +119,9 @@ const ActivateAccount = () => {
                             <span className="material-symbols-outlined text-[20px]">mail</span>
                         </div>
                     </div>
+                    <p className="text-[10px] text-slate-500 dark:text-[#cbbc90]/70 uppercase font-bold tracking-wider">
+                        Email otomatis diambil dari data staff yang diinput admin, tapi masih bisa Anda ubah bila perlu.
+                    </p>
                 </div>
 
                 <div className="flex flex-col gap-2">
